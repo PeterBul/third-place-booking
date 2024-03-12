@@ -1,0 +1,46 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  color: var(--foreground);
+  border-radius: 20px;
+}
+
+.navbar-fixed {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  z-index: 100;
+}
+
+.nav-item {
+  margin: 0 1rem;
+  border-radius: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.nav-item a, .nav-item a:visited {
+  padding: 0.5rem 1rem;
+  color: var(--foreground);
+  text-decoration: none;
+  display: inline-block;
+}
+
+.nav-items {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-button {
+  background-color: var(--primary);
+  color: var(--background);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin: 0;
+}

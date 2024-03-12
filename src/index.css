@@ -1,7 +1,14 @@
 /* From tutorial */
-@import url('https://fonts.googleapis.com/css2?family=Nunito&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat&family=PT+Sans&display=swap');
 
 
+
+:root {
+  /* Colors */
+  --primary: #fdf690;
+  --foreground: #eee;
+  --background: #333;
+}
 
 /* :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -35,22 +42,25 @@
   min-height: 100vh;
 } */
 
-/* h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-} */
+h1 {
+  /* font-size: 3.2em;
+  line-height: 1.1; */
+  font-family: Montserrat, sans-serif;
+  font-weight: 300;
+  line-height: 36px;
+}
 
-/* button {
+
+button {
   border-radius: 8px;
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: #333;
   cursor: pointer;
   transition: border-color 0.25s;
-} */
+  color: #fff;
+}
 /* button:hover {
   border-color: #646cff;
 } */
@@ -80,14 +90,14 @@ button:focus-visible {
 }
 
 html {
-    font-family: 'Nunito', sans-serif;
-    font-size: 22px;
-    color: #fff;
+    font-family: PT Sans, sans-serif;
+    font-size: 16px;
+    color: #333;
 }
 
 body {
     min-height: 100vh;
-    background-color: dodgerblue;
+    background-color: #333;
 }
 
 .App {
@@ -96,18 +106,16 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100vh; 
-  padding: 1rem 0.5rem;
 }
 
 section {
     width: 100%;
     max-width: 420px;
-    min-height: 400px;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     padding: 1rem;
-    background-color: rgba(0,0,0,0.4);
+    background-color: #fbfbfb;
     border-radius: 20px;
 }
 
@@ -120,7 +128,7 @@ form {
 }
 
 a, a:visited {
-    color: #fff;
+    color: #333;
 }
 
 input[type="text"],
@@ -129,16 +137,16 @@ input[type="email"],
 button,
 textarea {
   font-family: 'Nunito', sans-serif;
-  font-size: 22px;
+  font-size: 16px;
   padding: 0.25rem;
   border-radius: 0.5rem;
-  border-color: #8544bd;
-  border-style: solid;
+  border: 1px solid #ccc;
 }
 
 input[type="checkbox"] {
   width: 0.8rem;
   height: 0.8rem;
+  margin-right: 5px;
 }
 
 label,
@@ -204,3 +212,4 @@ ul {
   padding: 0; 
   margin: 0; 
 }
+

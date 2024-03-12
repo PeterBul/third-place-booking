@@ -12,9 +12,10 @@ const RequireAuth = ({ allowedRoles }: IProps) => {
   if (auth?.roles?.find((role) => allowedRoles?.includes(role))) {
     return <Outlet />;
   }
-  if (auth?.email) {
+  if (auth?.accessToken) {
     return <Navigate to="/unauthorized" state={{ from: location }} replace />;
   }
+
   return <Navigate to="/login" state={{ from: location }} replace />;
 };
 

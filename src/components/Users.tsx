@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import useAxiosPrivate from '../hooks/useAxiosPrivate';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { CanceledError } from 'axios';
+import { AxiosError, CanceledError } from 'axios';
+import useAuth from '../hooks/useAuth';
 
 interface IUser {
   id: number;
@@ -20,6 +21,7 @@ const Users = () => {
   const axiosPrivate = useAxiosPrivate();
   const navigate = useNavigate();
   const location = useLocation();
+  const { setAuth } = useAuth();
 
   useEffect(() => {
     let isMounted = true;
@@ -37,7 +39,13 @@ const Users = () => {
           return;
         }
         console.error(error);
-        navigate('/login', { state: { from: location }, replace: true });
+        if (error instanceof AxiosError) {
+          // TODO: Make a shared axios error handler
+          if (error?.response?.status === 401) {
+            setAuth({});
+          }
+          navigate('/login', { state: { from: location }, replace: true });
+        }
       }
     };
     getUsers();

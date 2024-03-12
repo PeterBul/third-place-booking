@@ -8,7 +8,8 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from '../api/axios';
 import { AxiosError } from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
+import useAuth from '../hooks/useAuth';
 
 // const USER_REGEX = /^[a-zA-Z][a-zA-Z0-9-_]{3,23}$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%]).{8,24}$/;
@@ -96,6 +97,12 @@ function Register() {
       errRef.current?.focus();
     }
   };
+
+  const { auth } = useAuth();
+
+  if (auth.accessToken) {
+    return <Navigate to={'/'} replace />;
+  }
 
   return (
     <>

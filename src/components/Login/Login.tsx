@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
-import axios from '../api/axios';
+import axios from '../../api/axios';
 import { AxiosError } from 'axios';
-import useAuth from '../hooks/useAuth';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import useAuth from '../../hooks/useAuth';
+import { Link, useNavigate, useLocation, Navigate } from 'react-router-dom';
+import './Login.css';
 
 const LOGIN_URL = '/auth/signin';
 
 function Login() {
-  const { setAuth } = useAuth();
+  const { setAuth, persist, setPersist } = useAuth();
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -71,9 +72,21 @@ function Login() {
       }
       errRef.current?.focus();
     }
-
-    console.log({ email, password });
   };
+
+  const togglePersist = () => {
+    setPersist((prev) => !prev);
+  };
+
+  useEffect(() => {
+    localStorage.setItem('persist', JSON.stringify(persist));
+  }, [persist]);
+
+  const { auth } = useAuth();
+
+  if (auth.accessToken) {
+    return <Navigate to={'/'} replace />;
+  }
 
   return (
     <section>
@@ -105,6 +118,15 @@ function Login() {
           required
         />
         <button>Sign In</button>
+        <div className="persistCheck">
+          <input
+            type="checkbox"
+            id="persist"
+            onChange={togglePersist}
+            checked={persist}
+          />
+          <label htmlFor="persist">Trust This Device</label>
+        </div>
       </form>
       <p>
         Need an account?
