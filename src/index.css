@@ -1,13 +1,35 @@
 /* From tutorial */
-@import url('https://fonts.googleapis.com/css2?family=Montserrat&family=PT+Sans&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lacquer&family=Montserrat&family=PT+Sans&display=swap');
 
 
 
 :root {
   /* Colors */
   --primary: #fdf690;
-  --foreground: #eee;
-  --background: #333;
+  --fg-dark: #eee;
+  --bg-dark: #333;
+
+  --fg-light: #333;
+  --bg-light: #fbfbfb;
+
+
+  /* Fonts */
+  --font-family: 'PT Sans', sans-serif;
+  --font-size: 16px;
+  --line-height: 1.5;
+  --heading-font: 'Montserrat', sans-serif;
+  --fun-font: 'Lacquer', sans-serif;
+
+  --font-size-sm: 0.875rem; /* 14px */
+  --line-height-sm: 1.25rem; /* 20px */
+
+  --sm: 640px;
+  --md: 768px;
+  --lg: 1024px;
+  --xl: 1280px;
+  --2xl: 1536px;
+
+  --border-radius: 20px;
 }
 
 /* :root {
@@ -43,11 +65,40 @@
 } */
 
 h1 {
-  /* font-size: 3.2em;
-  line-height: 1.1; */
-  font-family: Montserrat, sans-serif;
-  font-weight: 300;
-  line-height: 36px;
+  font-family: var(--heading-font);
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+h2 {
+  font-family: var(--heading-font);
+  font-size: 2.25em;
+  line-height: 1.1;
+}
+
+h3 {
+  font-family: var(--heading-font);
+  font-size: 1.5em;
+  line-height: 1.1;
+}
+
+h4 {
+  font-family: var(--heading-font);
+  font-size: 1.25em;
+  line-height: 1.1;
+}
+
+h5 {
+  font-family: var(--heading-font);
+  font-size: 1em;
+  line-height: 1.1;
+}
+
+.subtitle {
+  font-family: var(--fun-font);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-sm);
+  color: #333;
 }
 
 
@@ -92,15 +143,15 @@ button:focus-visible {
 html {
     font-family: PT Sans, sans-serif;
     font-size: 16px;
-    color: #333;
+    color: var(--fg-dark);
 }
 
 body {
     min-height: 100vh;
-    background-color: #333;
+    background-color: var(--bg-dark);
 }
 
-.App {
+.full-page-center {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -108,13 +159,51 @@ body {
   min-height: 100vh; 
 }
 
+
 section {
+  margin: 0 auto;
+}
+
+section.sm {
+    max-width: var(--sm);
+    /* width: 100%;
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 1rem;
+    background-color: #fbfbfb;
+    border-radius: 20px; */
+}
+
+section.md {
+    max-width: var(--md);
+}
+
+section.lg {
+    max-width: var(--lg);
+}
+
+section.xl {
+    max-width: var(--xl);
+}
+
+section.xxl {
+    max-width: var(--2xl);
+}
+
+.top-section {
+    padding-top: 6rem;
+}
+
+.login-form, .register-form, .home-section, .center-card {
     width: 100%;
     max-width: 420px;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     padding: 1rem;
+    color: var(--fg-light);
     background-color: #fbfbfb;
     border-radius: 20px;
 }
@@ -213,3 +302,89 @@ ul {
   margin: 0; 
 }
 
+
+.text-xs {
+	font-size: 0.75rem; /* 12px */
+  line-height: 1rem; /* 16px */
+}
+
+
+.text-sm {
+	font-size: 0.875rem; /* 14px */
+  line-height: 1.25rem; /* 20px */
+}
+
+.text-base {
+	font-size: 1rem; /* 16px */
+line-height: 1.5rem; /* 24px */
+}
+
+.text-lg {
+	font-size: 1.125rem; /* 18px */
+line-height: 1.75rem; /* 28px */
+}
+
+.text-xl {
+	font-size: 1.25rem; /* 20px */
+line-height: 1.75rem; /* 28px */
+}
+
+.text-2xl {
+	font-size: 1.5rem; /* 24px */
+line-height: 2rem; /* 32px */
+}
+
+.text-3xl {
+	font-size: 1.875rem; /* 30px */
+line-height: 2.25rem; /* 36px */
+}
+
+.text-4xl {
+	font-size: 2.25rem; /* 36px */
+line-height: 2.5rem; /* 40px */
+}
+
+.text-5xl {
+	font-size: 3rem; /* 48px */
+  line-height: 1;
+}
+
+.text-6xl {
+	font-size: 3.75rem; /* 60px */
+line-height: 1;
+}
+
+.text-7xl {
+	font-size: 4.5rem; /* 72px */
+  line-height: 1;
+}
+
+.text-8xl {
+	font-size: 6rem; /* 96px */
+  line-height: 1;
+}
+
+.text-9xl {
+  font-size: 8rem; /* 128px */
+  line-height: 1;
+}
+
+.text-fun {
+  font-family: var(--fun-font);
+}
+
+.text-dark {
+  color: var(--fg-dark);
+}
+
+.text-light {
+  color: var(--fg-light);
+}
+
+hgroup.center {
+  text-align: center;
+}
+
+.weight-400 {
+  font-weight: 400;
+}

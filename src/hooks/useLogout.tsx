@@ -2,7 +2,7 @@ import useAuth from './useAuth';
 import { useNavigate } from 'react-router-dom';
 import axios from '../api/axios';
 
-const useLogout = (shouldNavigateToLinkPage = true) => {
+const useLogout = (shouldNavigateToLogin = true) => {
   const { setAuth } = useAuth();
   const navigate = useNavigate();
 
@@ -15,8 +15,8 @@ const useLogout = (shouldNavigateToLinkPage = true) => {
     } catch (error) {
       console.error('error', error);
     }
-    if (shouldNavigateToLinkPage) {
-      navigate('/linkpage');
+    if (shouldNavigateToLogin) {
+      navigate('/login');
     }
   };
 };

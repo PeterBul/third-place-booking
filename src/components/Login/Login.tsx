@@ -47,7 +47,6 @@ function Login() {
         { email, password },
         { withCredentials: true }
       );
-      console.log('response.data', response.data);
       const accessToken = response.data.accessToken;
       const roles = response.data.roles;
       // Can add roles here if we have added to the backend
@@ -89,52 +88,54 @@ function Login() {
   }
 
   return (
-    <section>
-      <p
-        ref={errRef}
-        className={errorMessage ? 'errMsg' : 'offscreen'}
-        aria-live="assertive"
-      >
-        {errorMessage}
-      </p>
-      <h1>Sign In</h1>
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="email">Email:</label>
-        <input
-          type="email"
-          id="email"
-          ref={emailRef}
-          autoComplete="off"
-          onChange={(e) => setEmail(e.target.value)}
-          value={email}
-          required
-        />
-        <label htmlFor="password">Password:</label>
-        <input
-          type="password"
-          id="password"
-          onChange={(e) => setPassword(e.target.value)}
-          value={password}
-          required
-        />
-        <button>Sign In</button>
-        <div className="persistCheck">
+    <section className="full-page-center">
+      <div className="login-form">
+        <p
+          ref={errRef}
+          className={errorMessage ? 'errMsg' : 'offscreen'}
+          aria-live="assertive"
+        >
+          {errorMessage}
+        </p>
+        <h1>Sign In</h1>
+        <form onSubmit={handleSubmit}>
+          <label htmlFor="email">Email:</label>
           <input
-            type="checkbox"
-            id="persist"
-            onChange={togglePersist}
-            checked={persist}
+            type="email"
+            id="email"
+            ref={emailRef}
+            autoComplete="off"
+            onChange={(e) => setEmail(e.target.value)}
+            value={email}
+            required
           />
-          <label htmlFor="persist">Trust This Device</label>
-        </div>
-      </form>
-      <p>
-        Need an account?
-        <br />
-        <span className="line">
-          <Link to="/register">Sign Up</Link>
-        </span>
-      </p>
+          <label htmlFor="password">Password:</label>
+          <input
+            type="password"
+            id="password"
+            onChange={(e) => setPassword(e.target.value)}
+            value={password}
+            required
+          />
+          <button>Sign In</button>
+          <div className="persistCheck">
+            <input
+              type="checkbox"
+              id="persist"
+              onChange={togglePersist}
+              checked={persist}
+            />
+            <label htmlFor="persist">Trust This Device</label>
+          </div>
+        </form>
+        <p>
+          Need an account?
+          <br />
+          <span className="line">
+            <Link to="/register">Sign Up</Link>
+          </span>
+        </p>
+      </div>
     </section>
   );
 }

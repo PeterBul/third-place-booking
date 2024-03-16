@@ -3,8 +3,10 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
-  color: var(--foreground);
+  color: var(--fg-dark);
+  background: var(--bg-dark);
   border-radius: 20px;
+  padding: 1rem;
 }
 
 .navbar-fixed {
@@ -23,7 +25,7 @@
 
 .nav-item a, .nav-item a:visited {
   padding: 0.5rem 1rem;
-  color: var(--foreground);
+  color: var(--fg-dark);
   text-decoration: none;
   display: inline-block;
 }
@@ -36,7 +38,7 @@
 
 .nav-button {
   background-color: var(--primary);
-  color: var(--background);
+  color: var(--fg-light);
   border: none;
   padding: 0.5rem 1rem;
   border-radius: 10px;

@@ -8,7 +8,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from '../api/axios';
 import { AxiosError } from 'axios';
-import { Link, Navigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 
 // const USER_REGEX = /^[a-zA-Z][a-zA-Z0-9-_]{3,23}$/;
@@ -17,7 +17,7 @@ const EMAIL_REGEX = /^[\w\-.]+@([\w-]+\.)+[\w-]{2,}$/;
 const REGISTER_URL = '/auth/signup';
 
 function Register() {
-  const emailRef = useRef<HTMLInputElement>(null);
+  const firstNameRef = useRef<HTMLInputElement>(null);
   const errRef = useRef<HTMLParagraphElement>(null);
 
   const [isMemberThirdPlace, setMemberThirdPlace] = useState(false);
@@ -38,10 +38,12 @@ function Register() {
   const [matchFocus, setMatchFocus] = useState(false);
 
   const [errMsg, setErrMsg] = useState('');
-  const [success, setSuccess] = useState(false);
+
+  const navigate = useNavigate();
+  const { setAuth } = useAuth();
 
   useEffect(() => {
-    emailRef.current?.focus();
+    firstNameRef.current?.focus();
   }, []);
 
   // const validName = USER_REGEX.test(user);
@@ -81,8 +83,12 @@ function Register() {
         },
         { withCredentials: true }
       );
-      console.log('response', response);
-      setSuccess(true);
+
+      const accessToken = response.data.accessToken;
+      const roles = response.data.roles;
+      // Can add roles here if we have added to the backend
+      setAuth({ email, password: pwd, accessToken, roles });
+      navigate('/', { replace: true });
     } catch (error) {
       if (!(error instanceof AxiosError)) {
         throw error;
@@ -106,16 +112,8 @@ function Register() {
 
   return (
     <>
-      {success ? (
-        <section>
-          <h1>Success</h1>
-          <p>
-            {/* TODO: Add link here */}
-            <a href="#">Sign In</a>
-          </p>
-        </section>
-      ) : (
-        <section>
+      <section className="full-page-center">
+        <div className="register-form">
           <p
             ref={errRef}
             className={errMsg ? 'errMsg' : 'offscreeen'}
@@ -159,6 +157,7 @@ function Register() {
             <input
               type="text"
               id="first_name"
+              ref={firstNameRef}
               required
               onChange={(e) => setFirstName(e.target.value)}
             />
@@ -188,7 +187,6 @@ function Register() {
             <input
               type="email"
               id="email"
-              ref={emailRef}
               autoComplete="off"
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -198,13 +196,13 @@ function Register() {
             {/* <label htmlFor="username">
               Username:
               <span className={validName ? 'valid' : 'hide'}>
-                <FontAwesomeIcon icon={faCheck} />
+              <FontAwesomeIcon icon={faCheck} />
               </span>
               <span className={validName || !user ? 'hide' : 'invalid'}>
-                <FontAwesomeIcon icon={faTimes} />
+              <FontAwesomeIcon icon={faTimes} />
               </span>
-            </label>
-            <input
+              </label>
+              <input
               type="text"
               id="username"
               ref={userNameRef}
@@ -215,13 +213,13 @@ function Register() {
               aria-describedby="uidnote"
               onFocus={() => setUserFocus(true)}
               onBlur={() => setUserFocus(false)}
-            />
-            <p
+              />
+              <p
               id="uidnote"
               className={
                 userFocus && user && !validName ? 'instructions' : 'offscreen'
               }
-            >
+              >
               <FontAwesomeIcon icon={faInfoCircle} />
               4 to 24 characters.
               <br />
@@ -304,8 +302,8 @@ function Register() {
               </span>
             </p>
           </form>
-        </section>
-      )}
+        </div>
+      </section>
     </>
   );
 }
