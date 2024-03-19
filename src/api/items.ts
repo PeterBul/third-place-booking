@@ -1,15 +1,18 @@
 import axios from './axios';
+import { IBooking } from './bookings';
 
-interface IItem {
+export interface IItem {
   id: number;
   title: string;
   description: string;
   image: IImage;
+  bookings: IBooking[];
 }
 
 interface IImage {
   url: string;
   alt: string;
+  isClippable: boolean;
 }
 
 export const getItems = async () => {
