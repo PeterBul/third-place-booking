@@ -1,9 +1,8 @@
 import { Text } from '@chakra-ui/react';
 import { CellContext } from '@tanstack/react-table';
-import { IUser } from '../../api/users';
 import { TValue } from './types';
 
-export const StaticCell = ({ getValue }: CellContext<IUser, TValue>) => {
+export function StaticCell<T>({ getValue }: CellContext<T, TValue>) {
   const value = getValue();
 
   return (
@@ -13,8 +12,10 @@ export const StaticCell = ({ getValue }: CellContext<IUser, TValue>) => {
       overflow="hidden"
       textOverflow="ellipsis"
       whiteSpace="nowrap"
+      p={'5.5px'}
+      m={'4px'}
     >
       {value}
     </Text>
   );
-};
+}

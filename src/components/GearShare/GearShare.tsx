@@ -167,20 +167,27 @@ const GearShare = () => {
 
             return (
               <form onSubmit={formik.handleSubmit}>
-                <Box className={'booking-items'}>
-                  {items.data?.map((item) => (
-                    <BookingItem
-                      key={item.id}
-                      item={item}
-                      isSelected={formik.values.itemIds.includes(item.id)}
-                      handleSelectionChange={handleSelectionChange}
-                    />
-                  ))}
+                <Box
+                  display={'grid'}
+                  gridTemplateColumns={'repeat( auto-fit, minmax(250px, 1fr) )'}
+                  mt="20px"
+                  gap="50px"
+                >
+                  {items.data
+                    ?.sort((a, b) => a.id - b.id)
+                    .map((item) => (
+                      <BookingItem
+                        key={item.id}
+                        item={item}
+                        isSelected={formik.values.itemIds.includes(item.id)}
+                        handleSelectionChange={handleSelectionChange}
+                      />
+                    ))}
                 </Box>
                 <Container mt="50px">
                   <Stack gap={4}>
                     <Heading as="h2" size="lg">
-                      Booking information
+                      Booking summary
                     </Heading>
                     <FormControl isInvalid={!!formik.errors.itemIds}>
                       <Text>
@@ -199,8 +206,9 @@ const GearShare = () => {
                             isChecked
                             onChange={() => handleUnselectItem(id)}
                             mr={4}
-                          />
-                          {items.data?.find((i) => i.id === id)?.title}
+                          >
+                            {items.data?.find((i) => i.id === id)?.title}
+                          </Checkbox>
                         </ListItem>
                       ))}
                     </List>

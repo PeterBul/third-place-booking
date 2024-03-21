@@ -1,8 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { AxiosError } from 'axios';
 import useAuth from '../hooks/useAuth';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { editUser, getUsers } from '../api/users';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Box, Icon } from '@chakra-ui/react';
 import {
   SortDirection,
@@ -12,61 +11,76 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { EditableCell } from './Table/EditableCell';
 import { TValue } from './Table/types';
-import { StaticCell } from './Table/StaticCell';
-import { CheckmarkCell } from './Table/CheckmarkCell';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Filters } from './Table/Filters';
 import { MdArrowDownward, MdArrowUpward, MdSwapVert } from 'react-icons/md';
+import { EditableCell } from './Table/EditableCell';
+import { editImage, getImages } from '../api/images';
+import { CheckmarkCell } from './Table/CheckmarkCell';
 
-const columns = [
-  {
-    header: 'First Name',
-    accessorKey: 'firstName',
-    cell: EditableCell,
-  },
-  {
-    header: 'Last Name',
-    accessorKey: 'lastName',
-    cell: EditableCell,
-  },
-  {
-    header: 'Email',
-    accessorKey: 'email',
-    cell: StaticCell,
-  },
-  {
-    header: 'Phone',
-    accessorKey: 'phone',
-    cell: StaticCell,
-  },
-  {
-    header: 'Member Third Place',
-    accessorKey: 'isMemberThirdPlace',
-    cell: CheckmarkCell,
-  },
-  {
-    header: 'Member Bloom',
-    accessorKey: 'isMemberBloom',
-    cell: CheckmarkCell,
-  },
-];
-const Users = () => {
+const ImagesAdmin = () => {
   // const [users, setUsers] = useState<IUser[]>([]);
   const navigate = useNavigate();
   const location = useLocation();
   const { setAuth } = useAuth();
+
   const {
+    data: images,
     isError,
-    data: users,
     error,
-  } = useQuery({ queryKey: ['users'], queryFn: getUsers });
+  } = useQuery({
+    queryKey: ['images'],
+    queryFn: getImages,
+  });
+
+  const columns = [
+    {
+      header: 'Alt',
+      accessorKey: 'alt',
+      cell: EditableCell,
+    },
+    {
+      header: 'url',
+      accessorKey: 'url',
+      cell: EditableCell,
+      size: 600,
+    },
+    {
+      header: 'Clippable',
+      accessorKey: 'isClippable',
+      cell: CheckmarkCell,
+    },
+  ];
+
+  const queryClient = useQueryClient();
 
   const [globalFilter, setGlobalFilter] = useState('');
-  const userMutation = useMutation({ mutationFn: editUser });
+
+  const itemMutation = useMutation({
+    mutationFn: editImage,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['images'] });
+    },
+  });
+
+  const data = useMemo(() => {
+    return (
+      images
+        ?.sort((a, b) => (a.id ?? 0) - (b.id ?? 0))
+        .map((image) => {
+          return {
+            id: image.id,
+            alt: image.alt,
+            url: image.url,
+            isClippable: image.isClippable,
+          };
+        }) ?? []
+    );
+  }, [images]);
+
   const table = useReactTable({
-    data: users ?? [],
+    data,
     columns,
     state: {
       globalFilter,
@@ -82,10 +96,10 @@ const Users = () => {
         columnId: string,
         value: TValue | boolean
       ) => {
-        const user = users?.find((user) => user.id === +rowId);
-        if (!user) return;
-        userMutation.mutate({
-          id: user.id,
+        const item = images?.find((image) => image.id === +rowId);
+        if (!item) return;
+        itemMutation.mutate({
+          id: item.id,
           [columnId]: value,
         });
       },
@@ -147,7 +161,7 @@ const Users = () => {
   );
 };
 
-export default Users;
+export default ImagesAdmin;
 
 const getSortIcon = (dir: SortDirection | false) => {
   if (dir === 'asc') {

@@ -10,6 +10,11 @@ import axios from '../api/axios';
 import { AxiosError } from 'axios';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
+import { Container, Stack, Text } from '@chakra-ui/layout';
+import { Checkbox } from '@chakra-ui/checkbox';
+import { FormControl, FormLabel } from '@chakra-ui/form-control';
+import { Input } from '@chakra-ui/input';
+import { Button } from '@chakra-ui/button';
 
 // const USER_REGEX = /^[a-zA-Z][a-zA-Z0-9-_]{3,23}$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%]).{8,24}$/;
@@ -17,7 +22,7 @@ const EMAIL_REGEX = /^[\w\-.]+@([\w-]+\.)+[\w-]{2,}$/;
 const REGISTER_URL = '/auth/signup';
 
 function Register() {
-  const firstNameRef = useRef<HTMLInputElement>(null);
+  const memberThirdPlaceRef = useRef<HTMLInputElement>(null);
   const errRef = useRef<HTMLParagraphElement>(null);
 
   const [isMemberThirdPlace, setMemberThirdPlace] = useState(false);
@@ -43,7 +48,7 @@ function Register() {
   const { setAuth } = useAuth();
 
   useEffect(() => {
-    firstNameRef.current?.focus();
+    memberThirdPlaceRef.current?.focus();
   }, []);
 
   // const validName = USER_REGEX.test(user);
@@ -112,8 +117,21 @@ function Register() {
 
   return (
     <>
-      <section className="full-page-center">
-        <div className="register-form">
+      <Container
+        h={'100%'}
+        pt={'100px'}
+        display={'flex'}
+        alignItems={'center'}
+        justifyContent="center"
+        minH={'100vh'}
+      >
+        <Stack
+          w={'100%'}
+          maxW={'420px'}
+          padding={'1rem'}
+          borderRadius={'20px'}
+          bg={'gray.700'}
+        >
           <p
             ref={errRef}
             className={errMsg ? 'errMsg' : 'offscreeen'}
@@ -124,76 +142,76 @@ function Register() {
           <h1>Register</h1>
 
           <form onSubmit={handleSubmit}>
-            <p className="strong">Do you already have a membership?</p>
-            <div>
-              <input
-                className="register-checkbox"
-                type="checkbox"
-                id="membership_thirdplace"
-                name="membership_thirdplace"
-                onChange={(e) => setMemberThirdPlace(e.target.checked)}
-              />
-              <label htmlFor="membership_thirdplace">
-                I'm a member of Third Place
-              </label>
-            </div>
-            <div>
-              <input
-                className="register-checkbox"
-                type="checkbox"
-                id="membership_bloom"
-                name="membership_bloom"
-                onChange={(e) => setMemberBloom(e.target.checked)}
-              />
-              <label htmlFor="membership_bloom">I'm a member of Bloom</label>
-            </div>
-            {/* TODO: Add name input */}
-            <label htmlFor="first_name">
-              First Name:
-              <span className={firstName ? 'valid' : 'hide'}>
-                <FontAwesomeIcon icon={faCheck} />
-              </span>
-            </label>
-            <input
-              type="text"
-              id="first_name"
-              ref={firstNameRef}
-              required
-              onChange={(e) => setFirstName(e.target.value)}
-            />
-            <label htmlFor="last_name">
-              Last Name:
-              <span className={lastName ? 'valid' : 'hide'}>
-                <FontAwesomeIcon icon={faCheck} />
-              </span>
-            </label>
-            <input
-              type="text"
-              id="last_name"
-              required
-              onChange={(e) => setLastName(e.target.value)}
-            />
+            <Stack gap={4}>
+              <Text as="b">Do you already have a membership?</Text>
+              <div>
+                <Checkbox
+                  isChecked={isMemberThirdPlace}
+                  onChange={(e) => setMemberThirdPlace(e.target.checked)}
+                  ref={memberThirdPlaceRef}
+                >
+                  I'm a member of Third Place
+                </Checkbox>
+              </div>
+              <div>
+                <Checkbox
+                  isChecked={isMemberBloom}
+                  onChange={(e) => setMemberBloom(e.target.checked)}
+                >
+                  I'm a member of Bloom
+                </Checkbox>
+              </div>
+              <FormControl>
+                <FormLabel htmlFor="first_name">
+                  First Name:
+                  <span className={firstName ? 'valid' : 'hide'}>
+                    <FontAwesomeIcon icon={faCheck} />
+                  </span>
+                </FormLabel>
+                <Input
+                  type="text"
+                  id="first_name"
+                  required
+                  onChange={(e) => setFirstName(e.target.value)}
+                />
+              </FormControl>
+              <FormControl>
+                <FormLabel htmlFor="last_name">
+                  Last Name:
+                  <span className={lastName ? 'valid' : 'hide'}>
+                    <FontAwesomeIcon icon={faCheck} />
+                  </span>
+                </FormLabel>
+                <Input
+                  type="text"
+                  id="last_name"
+                  required
+                  onChange={(e) => setLastName(e.target.value)}
+                />
+              </FormControl>
 
-            {/* TODO: Change to email */}
-            <label htmlFor="email">
-              Email:
-              <span className={isValidEmail ? 'valid' : 'hide'}>
-                <FontAwesomeIcon icon={faCheck} />
-              </span>
-              <span className={isValidEmail || !email ? 'hide' : 'invalid'}>
-                <FontAwesomeIcon icon={faTimes} />
-              </span>
-            </label>
-            <input
-              type="email"
-              id="email"
-              autoComplete="off"
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              aria-invalid={isValidEmail ? 'false' : 'true'}
-            />
-            {/* Username */}
-            {/* <label htmlFor="username">
+              {/* TODO: Change to email */}
+              <FormControl>
+                <FormLabel htmlFor="email">
+                  Email:
+                  <span className={isValidEmail ? 'valid' : 'hide'}>
+                    <FontAwesomeIcon icon={faCheck} />
+                  </span>
+                  <span className={isValidEmail || !email ? 'hide' : 'invalid'}>
+                    <FontAwesomeIcon icon={faTimes} />
+                  </span>
+                </FormLabel>
+                <Input
+                  type="email"
+                  id="email"
+                  autoComplete="off"
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  aria-invalid={isValidEmail ? 'false' : 'true'}
+                />
+              </FormControl>
+              {/* Username */}
+              {/* <label htmlFor="username">
               Username:
               <span className={validName ? 'valid' : 'hide'}>
               <FontAwesomeIcon icon={faCheck} />
@@ -227,83 +245,96 @@ function Register() {
               <br />
               Letters, numbers, underscores, hyphens allowed.
             </p> */}
-            <label htmlFor="password">
-              Password:
-              <span className={isValidPwd ? 'valid' : 'hide'}>
-                <FontAwesomeIcon icon={faCheck} />
-              </span>
-              <span className={isValidPwd || !pwd ? 'hide' : 'invalid'}>
-                <FontAwesomeIcon icon={faTimes} />
-              </span>
-            </label>
-            <input
-              type="password"
-              id="password"
-              onChange={(e) => setPwd(e.target.value)}
-              required
-              aria-invalid={isValidPwd ? 'false' : 'true'}
-              aria-describedby="pwdnote"
-              onFocus={() => setPwdFocus(true)}
-              onBlur={() => setPwdFocus(false)}
-            />
-            <p
-              id="pwdnote"
-              className={
-                pwdFocus && !isValidPwd && pwd ? 'instructions' : 'offscreen'
-              }
-            >
-              <FontAwesomeIcon icon={faInfoCircle} />
-              8 to 24 characters.
-              <br />
-              Must include uppercase and lowercase letters, a number, and a
-              special character.
-              <br />
-              Allowed special characters:{' '}
-              <span aria-label="exclamation mark">!</span>
-              <span aria-label="at sign">@</span>
-              <span aria-label="hash">#</span>
-              <span aria-label="dollar sign">$</span>
-              <span aria-label="percent sign">%</span>
-            </p>
-            <label htmlFor="confirm_pwd">
-              Confirm Password:
-              <span className={isValidMatch && matchPwd ? 'valid' : 'hide'}>
-                <FontAwesomeIcon icon={faCheck} />
-              </span>
-              <span className={isValidMatch || !matchPwd ? 'hide' : 'invalid'}>
-                <FontAwesomeIcon icon={faTimes} />
-              </span>
-            </label>
-            <input
-              type="password"
-              id="confirm_pwd"
-              onChange={(e) => setMatchPwd(e.target.value)}
-              required
-              aria-invalid={isValidMatch ? 'false' : 'true'}
-              aria-describedby="confirmnote"
-              onFocus={() => setMatchFocus(true)}
-              onBlur={() => setMatchFocus(false)}
-            />
-            <p
-              id="confirmnote"
-              className={
-                matchFocus && !isValidMatch ? 'instructions' : 'offscreen'
-              }
-            >
-              <FontAwesomeIcon icon={faInfoCircle} />
-              Must match the password above.
-            </p>
-            <button disabled={!isValidEntries}>Sign Up</button>
-            <p>
-              Already registered?
-              <br />
-              <span className="line">
-                <Link to="/login">Sign In</Link>
-              </span>
-            </p>
+              <FormControl>
+                <FormLabel htmlFor="password">
+                  Password:
+                  <span className={isValidPwd ? 'valid' : 'hide'}>
+                    <FontAwesomeIcon icon={faCheck} />
+                  </span>
+                  <span className={isValidPwd || !pwd ? 'hide' : 'invalid'}>
+                    <FontAwesomeIcon icon={faTimes} />
+                  </span>
+                </FormLabel>
+                <Input
+                  type="password"
+                  id="password"
+                  onChange={(e) => setPwd(e.target.value)}
+                  required
+                  aria-invalid={isValidPwd ? 'false' : 'true'}
+                  aria-describedby="pwdnote"
+                  onFocus={() => setPwdFocus(true)}
+                  onBlur={() => setPwdFocus(false)}
+                />
+                <Text
+                  id="pwdnote"
+                  className={
+                    pwdFocus && !isValidPwd && pwd
+                      ? 'instructions'
+                      : 'offscreen'
+                  }
+                  bg={'gray.800'}
+                >
+                  <FontAwesomeIcon icon={faInfoCircle} />
+                  8 to 24 characters.
+                  <br />
+                  Must include uppercase and lowercase letters, a number, and a
+                  special character.
+                  <br />
+                  Allowed special characters:{' '}
+                  <span aria-label="exclamation mark">!</span>
+                  <span aria-label="at sign">@</span>
+                  <span aria-label="hash">#</span>
+                  <span aria-label="dollar sign">$</span>
+                  <span aria-label="percent sign">%</span>
+                </Text>
+              </FormControl>
+              <FormControl>
+                <FormLabel htmlFor="confirm_pwd">
+                  Confirm Password:
+                  <span className={isValidMatch && matchPwd ? 'valid' : 'hide'}>
+                    <FontAwesomeIcon icon={faCheck} />
+                  </span>
+                  <span
+                    className={isValidMatch || !matchPwd ? 'hide' : 'invalid'}
+                  >
+                    <FontAwesomeIcon icon={faTimes} />
+                  </span>
+                </FormLabel>
+                <Input
+                  type="password"
+                  id="confirm_pwd"
+                  onChange={(e) => setMatchPwd(e.target.value)}
+                  required
+                  aria-invalid={isValidMatch ? 'false' : 'true'}
+                  aria-describedby="confirmnote"
+                  onFocus={() => setMatchFocus(true)}
+                  onBlur={() => setMatchFocus(false)}
+                />
+                <Text
+                  id="confirmnote"
+                  className={
+                    matchFocus && !isValidMatch ? 'instructions' : 'offscreen'
+                  }
+                  bg={'gray.800'}
+                >
+                  <FontAwesomeIcon icon={faInfoCircle} />
+                  Must match the password above.
+                </Text>
+              </FormControl>
+              <Button type="submit" disabled={!isValidEntries}>
+                Sign Up
+              </Button>
+              <p>
+                Already registered?
+                <br />
+                <span className="line">
+                  <Link to="/login">Sign In</Link>
+                </span>
+              </p>
+            </Stack>
           </form>
-        </div>
-      </section>
+        </Stack>
+      </Container>
     </>
   );
 }

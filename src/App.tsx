@@ -11,6 +11,10 @@ import RequireAuth from './components/RequireAuth';
 import PersistentLogin from './components/PersistentLogin';
 import { e_Roles } from './enums/e_Roles';
 import GearShare from './components/GearShare/GearShare';
+import Users from './components/Users';
+import BookingsAdmin from './components/BookingsAdmin';
+import ItemsAdmin from './components/ItemsAdmin';
+import ImagesAdmin from './components/ImagesAdmin';
 
 function App() {
   return (
@@ -29,8 +33,15 @@ function App() {
             <Route path="booking" element={<GearShare />} />
           </Route>
 
-          <Route element={<RequireAuth allowedRoles={[e_Roles.Admin]} />}>
-            <Route path="admin" element={<Admin />} />
+          <Route element={<RequireAuth allowedRoles={[e_Roles.User]} />}>
+            <Route path="admin" element={<Admin />}>
+              <Route element={<RequireAuth allowedRoles={[e_Roles.Admin]} />}>
+                <Route path="users" element={<Users />} />
+                <Route path="items" element={<ItemsAdmin />} />
+                <Route path="images" element={<ImagesAdmin />} />
+              </Route>
+              <Route path="bookings" element={<BookingsAdmin />} />
+            </Route>
           </Route>
 
           {/* catch all */}

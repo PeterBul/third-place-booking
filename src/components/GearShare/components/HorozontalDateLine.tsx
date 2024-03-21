@@ -13,7 +13,7 @@ export const HorizontalDateLine = (props: IProps) => {
         {moment(props.fromDate).format('MMM Do')}
       </Text>
       <Box flex={1} h="1px" bg="gray.500" />
-      🕰️
+      <Text fontSize={'large'}>🕰️</Text>
       <Box flex={1} h="1px" bg="gray.500" />
       <Text minW={50} pl={4}>
         {moment(props.toDate).format('MMM Do')}

@@ -1,15 +1,14 @@
 import { Center, Checkbox } from '@chakra-ui/react';
 import { CellContext } from '@tanstack/react-table';
 
-import { IUser } from '../../api/users';
 import { useEffect, useState } from 'react';
 
-export const CheckmarkCell = ({
+export function CheckmarkCell<T>({
   getValue,
   row,
   column,
   table,
-}: CellContext<IUser, boolean>) => {
+}: CellContext<T, boolean>) {
   const initialValue = getValue();
   const [value, setValue] = useState(initialValue);
 
@@ -18,7 +17,7 @@ export const CheckmarkCell = ({
   }, [initialValue]);
 
   const onChange = (value: boolean) => {
-    table.options.meta?.updateData(row.index, column.id, value);
+    table.options.meta?.updateData(row.id, column.id, value);
     setValue(value);
   };
 
@@ -30,4 +29,4 @@ export const CheckmarkCell = ({
       />
     </Center>
   );
-};
+}

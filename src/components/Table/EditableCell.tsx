@@ -1,24 +1,23 @@
 import { Input } from '@chakra-ui/react';
 import { CellContext } from '@tanstack/react-table';
 import { useEffect, useState } from 'react';
-import { IUser } from '../../api/users';
 import { TValue } from './types';
 
-export const EditableCell = ({
+export function EditableCell<T>({
   getValue,
   row,
   column,
   table,
-}: CellContext<IUser, TValue>) => {
+}: CellContext<T, TValue>) {
   const initialValue = getValue();
-  const [value, setValue] = useState(initialValue);
+  const [value, setValue] = useState(initialValue ?? '');
 
   const onBlur = () => {
-    table.options.meta?.updateData(row.index, column.id, value);
+    table.options.meta?.updateData(row.id, column.id, value);
   };
 
   useEffect(() => {
-    setValue(initialValue);
+    setValue(initialValue ?? '');
   }, [initialValue]);
 
   return (
@@ -34,4 +33,4 @@ export const EditableCell = ({
       whiteSpace="nowrap"
     />
   );
-};
+}

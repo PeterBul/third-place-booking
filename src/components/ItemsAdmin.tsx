@@ -1,8 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { AxiosError } from 'axios';
 import useAuth from '../hooks/useAuth';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { editUser, getUsers } from '../api/users';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Box, Icon } from '@chakra-ui/react';
 import {
   SortDirection,
@@ -12,61 +11,86 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { EditableCell } from './Table/EditableCell';
 import { TValue } from './Table/types';
-import { StaticCell } from './Table/StaticCell';
-import { CheckmarkCell } from './Table/CheckmarkCell';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Filters } from './Table/Filters';
 import { MdArrowDownward, MdArrowUpward, MdSwapVert } from 'react-icons/md';
+import { EditableCell } from './Table/EditableCell';
+import { editItem, getItems } from '../api/items';
+import { getImages } from '../api/images';
+import { SelectCell } from './Table/SelectCell';
 
-const columns = [
-  {
-    header: 'First Name',
-    accessorKey: 'firstName',
-    cell: EditableCell,
-  },
-  {
-    header: 'Last Name',
-    accessorKey: 'lastName',
-    cell: EditableCell,
-  },
-  {
-    header: 'Email',
-    accessorKey: 'email',
-    cell: StaticCell,
-  },
-  {
-    header: 'Phone',
-    accessorKey: 'phone',
-    cell: StaticCell,
-  },
-  {
-    header: 'Member Third Place',
-    accessorKey: 'isMemberThirdPlace',
-    cell: CheckmarkCell,
-  },
-  {
-    header: 'Member Bloom',
-    accessorKey: 'isMemberBloom',
-    cell: CheckmarkCell,
-  },
-];
-const Users = () => {
+const ItemsAdmin = () => {
   // const [users, setUsers] = useState<IUser[]>([]);
   const navigate = useNavigate();
   const location = useLocation();
   const { setAuth } = useAuth();
   const {
+    data: items,
     isError,
-    data: users,
     error,
-  } = useQuery({ queryKey: ['users'], queryFn: getUsers });
+  } = useQuery({
+    queryKey: ['items'],
+    queryFn: getItems,
+  });
+
+  const images = useQuery({
+    queryKey: ['images'],
+    queryFn: getImages,
+  });
+
+  const columns = [
+    {
+      header: 'Title',
+      accessorKey: 'title',
+      cell: EditableCell,
+    },
+    {
+      header: 'Description',
+      accessorKey: 'description',
+      cell: EditableCell,
+    },
+    {
+      header: 'Image',
+      accessorKey: 'imageId',
+      cell: SelectCell,
+      meta: {
+        options: images.data?.map((image) => ({
+          id: image.id,
+          displayValue: image.alt,
+        })),
+      },
+    },
+  ];
+
+  const queryClient = useQueryClient();
 
   const [globalFilter, setGlobalFilter] = useState('');
-  const userMutation = useMutation({ mutationFn: editUser });
+
+  const itemMutation = useMutation({
+    mutationFn: editItem,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['items'] });
+    },
+  });
+
+  const data = useMemo(() => {
+    return (
+      items
+        ?.sort((a, b) => (a.id ?? 0) - (b.id ?? 0))
+        .map((item) => {
+          return {
+            id: item.id,
+            title: item.title,
+            description: item.description,
+            imageId: item.image.id,
+          };
+        }) ?? []
+    );
+  }, [items]);
+
   const table = useReactTable({
-    data: users ?? [],
+    data,
     columns,
     state: {
       globalFilter,
@@ -82,11 +106,13 @@ const Users = () => {
         columnId: string,
         value: TValue | boolean
       ) => {
-        const user = users?.find((user) => user.id === +rowId);
-        if (!user) return;
-        userMutation.mutate({
-          id: user.id,
-          [columnId]: value,
+        const convertedValue =
+          columnId === 'imageId' && value !== undefined ? +value : value;
+        const item = items?.find((booking) => booking.id === +rowId);
+        if (!item) return;
+        itemMutation.mutate({
+          id: item.id,
+          [columnId]: convertedValue,
         });
       },
     },
@@ -147,7 +173,7 @@ const Users = () => {
   );
 };
 
-export default Users;
+export default ItemsAdmin;
 
 const getSortIcon = (dir: SortDirection | false) => {
   if (dir === 'asc') {

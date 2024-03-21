@@ -1,8 +1,10 @@
+import { Center } from '@chakra-ui/react';
+
 const Missing = () => {
   return (
-    <section>
+    <Center minH={'100vh'} pt={'100px'}>
       <h1>404 - Not Found</h1>
-    </section>
+    </Center>
   );
 };
 

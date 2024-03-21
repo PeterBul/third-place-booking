@@ -1,8 +1,8 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { AxiosError } from 'axios';
 import useAuth from '../hooks/useAuth';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { editUser, getUsers } from '../api/users';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { getMe, getUsers } from '../api/users';
 import { Box, Icon } from '@chakra-ui/react';
 import {
   SortDirection,
@@ -12,62 +12,117 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { EditableCell } from './Table/EditableCell';
 import { TValue } from './Table/types';
 import { StaticCell } from './Table/StaticCell';
 import { CheckmarkCell } from './Table/CheckmarkCell';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Filters } from './Table/Filters';
 import { MdArrowDownward, MdArrowUpward, MdSwapVert } from 'react-icons/md';
+import { editBooking, getBookings } from '../api/bookings';
+import moment from 'moment';
 
 const columns = [
   {
-    header: 'First Name',
-    accessorKey: 'firstName',
-    cell: EditableCell,
-  },
-  {
-    header: 'Last Name',
-    accessorKey: 'lastName',
-    cell: EditableCell,
-  },
-  {
-    header: 'Email',
-    accessorKey: 'email',
+    header: 'Borrowed By',
+    accessorKey: 'borrowedBy',
     cell: StaticCell,
   },
   {
-    header: 'Phone',
-    accessorKey: 'phone',
+    header: 'Rented From',
+    accessorKey: 'rentedFrom',
     cell: StaticCell,
   },
   {
-    header: 'Member Third Place',
-    accessorKey: 'isMemberThirdPlace',
+    header: 'Rented To',
+    accessorKey: 'rentedTo',
+    cell: StaticCell,
+  },
+  {
+    header: 'Status',
+    accessorKey: 'status',
+    cell: StaticCell,
+  },
+  {
+    header: 'Is Picked Up',
+    accessorKey: 'isPickedUp',
     cell: CheckmarkCell,
   },
   {
-    header: 'Member Bloom',
-    accessorKey: 'isMemberBloom',
+    header: 'Is Returned',
+    accessorKey: 'isReturned',
     cell: CheckmarkCell,
   },
 ];
-const Users = () => {
+const BookingsAdmin = () => {
   // const [users, setUsers] = useState<IUser[]>([]);
   const navigate = useNavigate();
   const location = useLocation();
   const { setAuth } = useAuth();
+  const { data: users } = useQuery({ queryKey: ['users'], queryFn: getUsers });
   const {
     isError,
-    data: users,
+    data: bookings,
     error,
-  } = useQuery({ queryKey: ['users'], queryFn: getUsers });
+  } = useQuery({ queryKey: ['bookings'], queryFn: getBookings });
+  const { data: me } = useQuery({ queryKey: ['me'], queryFn: getMe });
+  const queryClient = useQueryClient();
 
   const [globalFilter, setGlobalFilter] = useState('');
-  const userMutation = useMutation({ mutationFn: editUser });
+
+  const [isMeFilterActive, setIsMeFilterActive] = useState(false);
+
+  const toggleMeFilter = () => {
+    setIsMeFilterActive((v) => !v);
+  };
+
+  const bookingMutation = useMutation({
+    mutationFn: editBooking,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookings'] });
+    },
+  });
+
+  const data = useMemo(() => {
+    return (
+      bookings
+        ?.sort((a, b) => (a.id ?? 0) - (b.id ?? 0))
+        .filter((booking) => {
+          if (isMeFilterActive) {
+            return booking.userId === me?.id;
+          }
+          return true;
+        })
+        .map((booking) => {
+          const user = users?.find((user) => user.id === booking.userId);
+          return {
+            borrowedBy: user?.firstName + ' ' + user?.lastName,
+            rentedFrom: moment(booking.pickupDate).format('MMM Do YYYY'),
+            rentedTo: moment(booking.returnDate).format('MMM Do YYYY'),
+            status: booking.isReturned
+              ? 'Returned'
+              : booking.isPickedUp
+              ? 'Picked Up'
+              : 'Not Picked Up',
+            isPickedUp: booking.isPickedUp,
+            isReturned: booking.isReturned,
+            userId: booking.userId,
+            id: booking.id,
+          };
+        }) ?? []
+    );
+  }, [bookings, isMeFilterActive, me?.id, users]);
+
   const table = useReactTable({
-    data: users ?? [],
+    data,
     columns,
+    initialState: {
+      sorting: [
+        {
+          id: 'rentedFrom',
+          desc: true,
+        },
+      ],
+    },
     state: {
       globalFilter,
     },
@@ -82,10 +137,10 @@ const Users = () => {
         columnId: string,
         value: TValue | boolean
       ) => {
-        const user = users?.find((user) => user.id === +rowId);
-        if (!user) return;
-        userMutation.mutate({
-          id: user.id,
+        const booking = bookings?.find((booking) => booking.id === +rowId);
+        if (!booking) return;
+        bookingMutation.mutate({
+          id: booking.id,
           [columnId]: value,
         });
       },
@@ -104,7 +159,12 @@ const Users = () => {
 
   return (
     <Box>
-      <Filters globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} />
+      <Filters
+        globalFilter={globalFilter}
+        setGlobalFilter={setGlobalFilter}
+        isMeFilterActive={isMeFilterActive}
+        toggleMeFilter={toggleMeFilter}
+      />
       <Box className="table" w={table.getTotalSize()}>
         {table.getHeaderGroups().map((headerGroup) => (
           <Box className="tr" key={headerGroup.id}>
@@ -147,7 +207,7 @@ const Users = () => {
   );
 };
 
-export default Users;
+export default BookingsAdmin;
 
 const getSortIcon = (dir: SortDirection | false) => {
   if (dir === 'asc') {

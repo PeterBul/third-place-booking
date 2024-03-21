@@ -27,3 +27,7 @@ export const editUser = async (user: Partial<IUser> & { id: number }) => {
     })
   ).data;
 };
+
+export const getMe = async () => {
+  return (await axios.get<IUser>('/users/me', { withCredentials: true })).data;
+};

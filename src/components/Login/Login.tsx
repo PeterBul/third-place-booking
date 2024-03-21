@@ -4,6 +4,10 @@ import { AxiosError } from 'axios';
 import useAuth from '../../hooks/useAuth';
 import { Link, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import './Login.css';
+import { Input } from '@chakra-ui/input';
+import { Button } from '@chakra-ui/button';
+import { Container, Stack } from '@chakra-ui/layout';
+import { Checkbox } from '@chakra-ui/checkbox';
 
 const LOGIN_URL = '/auth/signin';
 
@@ -88,8 +92,21 @@ function Login() {
   }
 
   return (
-    <section className="full-page-center">
-      <div className="login-form">
+    <Container
+      display={'flex'}
+      justifyContent={'center'}
+      alignItems={'center'}
+      pt={'100px'}
+      minH={'100vh'}
+    >
+      <Stack
+        width={'100%'}
+        maxW={'420px'}
+        p={'1rem'}
+        borderRadius={'20px'}
+        backgroundColor={'gray.700'}
+        gap={4}
+      >
         <p
           ref={errRef}
           className={errorMessage ? 'errMsg' : 'offscreen'}
@@ -99,34 +116,33 @@ function Login() {
         </p>
         <h1>Sign In</h1>
         <form onSubmit={handleSubmit}>
-          <label htmlFor="email">Email:</label>
-          <input
-            type="email"
-            id="email"
-            ref={emailRef}
-            autoComplete="off"
-            onChange={(e) => setEmail(e.target.value)}
-            value={email}
-            required
-          />
-          <label htmlFor="password">Password:</label>
-          <input
-            type="password"
-            id="password"
-            onChange={(e) => setPassword(e.target.value)}
-            value={password}
-            required
-          />
-          <button>Sign In</button>
-          <div className="persistCheck">
-            <input
-              type="checkbox"
-              id="persist"
-              onChange={togglePersist}
-              checked={persist}
+          <Stack>
+            <label htmlFor="email">Email:</label>
+            <Input
+              type="email"
+              id="email"
+              ref={emailRef}
+              autoComplete="off"
+              onChange={(e) => setEmail(e.target.value)}
+              value={email}
+              required
             />
-            <label htmlFor="persist">Trust This Device</label>
-          </div>
+            <label htmlFor="password">Password:</label>
+            <Input
+              type="password"
+              id="password"
+              onChange={(e) => setPassword(e.target.value)}
+              value={password}
+              required
+            />
+            <Button type="submit" colorScheme="blue">
+              Sign In
+            </Button>
+
+            <Checkbox onChange={togglePersist} isChecked={persist}>
+              Trust This Device
+            </Checkbox>
+          </Stack>
         </form>
         <p>
           Need an account?
@@ -135,8 +151,8 @@ function Login() {
             <Link to="/register">Sign Up</Link>
           </span>
         </p>
-      </div>
-    </section>
+      </Stack>
+    </Container>
   );
 }
 
