@@ -22,7 +22,7 @@ const Admin = () => {
     if (!path) {
       navigate('bookings', { replace: true });
     }
-  }, []);
+  }, [navigate, path]);
 
   const paths = auth.roles?.includes(e_Roles.Admin)
     ? ['users', 'bookings', 'items', 'images']

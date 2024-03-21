@@ -24,6 +24,8 @@ export const QueryProvider = ({ children }: IProps) => {
       return;
     }
 
+    queryClient.invalidateQueries({ type: 'active' });
+
     isRefreshing.current = true;
 
     try {

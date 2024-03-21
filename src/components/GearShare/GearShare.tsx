@@ -17,6 +17,7 @@ import {
   Heading,
   Icon,
   Input,
+  Link as ChakraLink,
   List,
   ListItem,
   Spinner,
@@ -30,6 +31,7 @@ import { useState } from 'react';
 import { z } from 'zod';
 import { toFormikValidationSchema } from 'zod-formik-adapter';
 import { createBooking } from '../../api/bookings';
+import { Link as ReactRouterLink } from 'react-router-dom';
 
 const Schema = z
   .object({
@@ -87,6 +89,16 @@ const GearShare = () => {
             Please remember to update the booking when you take stuff out and
             when you return it.
           </Text>
+          <ChakraLink
+            as={ReactRouterLink}
+            to="/admin/bookings"
+            fontSize={'large'}
+            textDecoration={'underline'}
+            pt={'1rem'}
+            display={'block'}
+          >
+            Go to: Booking admin page
+          </ChakraLink>
         </Box>
       </Container>
       <Container maxW="2xl">
