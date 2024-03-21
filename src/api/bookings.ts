@@ -1,4 +1,4 @@
-import axios from './axios';
+import { axiosPrivate } from './axios';
 import { IItem } from './items';
 import { IUser } from './users';
 export interface IBooking {
@@ -23,7 +23,7 @@ interface IBookingWithUserId extends IBooking {
 
 export const getBookings = async () => {
   return (
-    await axios.get<IBookingWithUserId[]>('/bookings', {
+    await axiosPrivate.get<IBookingWithUserId[]>('/bookings', {
       withCredentials: true,
     })
   ).data;
@@ -31,7 +31,7 @@ export const getBookings = async () => {
 
 export const getBooking = async (id: number) => {
   return (
-    await axios.get<IBookingWithItems>(`/bookings/${id}`, {
+    await axiosPrivate.get<IBookingWithItems>(`/bookings/${id}`, {
       withCredentials: true,
     })
   ).data;
@@ -40,13 +40,17 @@ export const getBooking = async (id: number) => {
 export const createBooking = async (
   booking: Omit<IBooking, 'id' | 'createdAt' | 'isPickedUp' | 'isReturned'>
 ) => {
-  return await axios.post<IBooking>('/bookings', booking, {
+  return await axiosPrivate.post<IBooking>('/bookings', booking, {
     withCredentials: true,
   });
 };
 
 export const editBooking = async (booking: Partial<IBooking>) => {
-  return await axios.patch<IBooking>(`/bookings/${booking.id}`, booking, {
-    withCredentials: true,
-  });
+  return await axiosPrivate.patch<IBooking>(
+    `/bookings/${booking.id}`,
+    booking,
+    {
+      withCredentials: true,
+    }
+  );
 };

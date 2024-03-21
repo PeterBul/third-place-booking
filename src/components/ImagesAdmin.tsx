@@ -1,6 +1,3 @@
-import { useLocation, useNavigate } from 'react-router-dom';
-import { AxiosError } from 'axios';
-import useAuth from '../hooks/useAuth';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Box, Icon } from '@chakra-ui/react';
 import {
@@ -21,15 +18,8 @@ import { CheckmarkCell } from './Table/CheckmarkCell';
 
 const ImagesAdmin = () => {
   // const [users, setUsers] = useState<IUser[]>([]);
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { setAuth } = useAuth();
 
-  const {
-    data: images,
-    isError,
-    error,
-  } = useQuery({
+  const { data: images } = useQuery({
     queryKey: ['images'],
     queryFn: getImages,
   });
@@ -105,16 +95,6 @@ const ImagesAdmin = () => {
       },
     },
   });
-
-  if (isError) {
-    if (error instanceof AxiosError) {
-      // TODO: Make a shared axios error handler
-      if (error?.response?.status === 401) {
-        setAuth({});
-      }
-      navigate('/login', { state: { from: location }, replace: true });
-    }
-  }
 
   return (
     <Box>

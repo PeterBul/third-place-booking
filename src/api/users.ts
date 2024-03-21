@@ -1,4 +1,4 @@
-import axios from './axios';
+import { axiosPrivate } from './axios';
 
 export interface IUser {
   id: number;
@@ -14,7 +14,7 @@ export interface IUser {
 
 export const getUsers = async () => {
   return (
-    await axios.get<IUser[]>('/users', {
+    await axiosPrivate.get<IUser[]>('/users', {
       withCredentials: true,
     })
   ).data;
@@ -22,12 +22,13 @@ export const getUsers = async () => {
 
 export const editUser = async (user: Partial<IUser> & { id: number }) => {
   return (
-    await axios.patch<IUser>(`/users/${user.id}`, user, {
+    await axiosPrivate.patch<IUser>(`/users/${user.id}`, user, {
       withCredentials: true,
     })
   ).data;
 };
 
 export const getMe = async () => {
-  return (await axios.get<IUser>('/users/me', { withCredentials: true })).data;
+  return (await axiosPrivate.get<IUser>('/users/me', { withCredentials: true }))
+    .data;
 };

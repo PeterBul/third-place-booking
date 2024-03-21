@@ -1,6 +1,3 @@
-import { useLocation, useNavigate } from 'react-router-dom';
-import { AxiosError } from 'axios';
-import useAuth from '../hooks/useAuth';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { editUser, getUsers } from '../api/users';
 import { Box, Icon } from '@chakra-ui/react';
@@ -54,14 +51,7 @@ const columns = [
 ];
 const Users = () => {
   // const [users, setUsers] = useState<IUser[]>([]);
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { setAuth } = useAuth();
-  const {
-    isError,
-    data: users,
-    error,
-  } = useQuery({ queryKey: ['users'], queryFn: getUsers });
+  const { data: users } = useQuery({ queryKey: ['users'], queryFn: getUsers });
 
   const [globalFilter, setGlobalFilter] = useState('');
   const userMutation = useMutation({ mutationFn: editUser });
@@ -91,16 +81,6 @@ const Users = () => {
       },
     },
   });
-
-  if (isError) {
-    if (error instanceof AxiosError) {
-      // TODO: Make a shared axios error handler
-      if (error?.response?.status === 401) {
-        setAuth({});
-      }
-      navigate('/login', { state: { from: location }, replace: true });
-    }
-  }
 
   return (
     <Box>

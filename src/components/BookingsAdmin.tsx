@@ -1,6 +1,3 @@
-import { useLocation, useNavigate } from 'react-router-dom';
-import { AxiosError } from 'axios';
-import useAuth from '../hooks/useAuth';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getMe, getUsers } from '../api/users';
 import { Box, Icon } from '@chakra-ui/react';
@@ -55,15 +52,11 @@ const columns = [
 ];
 const BookingsAdmin = () => {
   // const [users, setUsers] = useState<IUser[]>([]);
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { setAuth } = useAuth();
   const { data: users } = useQuery({ queryKey: ['users'], queryFn: getUsers });
-  const {
-    isError,
-    data: bookings,
-    error,
-  } = useQuery({ queryKey: ['bookings'], queryFn: getBookings });
+  const { data: bookings } = useQuery({
+    queryKey: ['bookings'],
+    queryFn: getBookings,
+  });
   const { data: me } = useQuery({ queryKey: ['me'], queryFn: getMe });
   const queryClient = useQueryClient();
 
@@ -146,16 +139,6 @@ const BookingsAdmin = () => {
       },
     },
   });
-
-  if (isError) {
-    if (error instanceof AxiosError) {
-      // TODO: Make a shared axios error handler
-      if (error?.response?.status === 401) {
-        setAuth({});
-      }
-      navigate('/login', { state: { from: location }, replace: true });
-    }
-  }
 
   return (
     <Box>

@@ -1,4 +1,4 @@
-import axios from './axios';
+import { axiosPrivate } from './axios';
 
 export interface IImage {
   url: string;
@@ -8,12 +8,14 @@ export interface IImage {
 
 export const getImages = async () => {
   return (
-    await axios.get<WithId<IImage>[]>('/images', { withCredentials: true })
+    await axiosPrivate.get<WithId<IImage>[]>('/images', {
+      withCredentials: true,
+    })
   ).data;
 };
 
 export const editImage = async (image: WithId<Partial<IImage>>) => {
-  return await axios.patch<IImage>(`/images/${image.id}`, image, {
+  return await axiosPrivate.patch<IImage>(`/images/${image.id}`, image, {
     withCredentials: true,
   });
 };

@@ -102,7 +102,7 @@ export const BookingDrawer = (props: IProps) => {
             <Box>
               <Text>Items in booking:</Text>
               <HStack spacing={4} pt={2}>
-                {booking.items.map((item) => (
+                {booking.items?.map((item) => (
                   <Tag
                     size={'md'}
                     key={item.id}

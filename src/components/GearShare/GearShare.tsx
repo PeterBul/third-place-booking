@@ -19,6 +19,7 @@ import {
   Input,
   List,
   ListItem,
+  Spinner,
   Stack,
   Text,
   Textarea,
@@ -42,7 +43,10 @@ const Schema = z
   }, 'Return date must be after or the same as pickup date');
 
 const GearShare = () => {
-  const items = useQuery({ queryKey: ['items'], queryFn: getItems });
+  const { data: items, isLoading } = useQuery({
+    queryKey: ['items'],
+    queryFn: getItems,
+  });
   const queryClient = useQueryClient();
 
   const [isInfoOpen, setIsInfoOpen] = useState(false);
@@ -52,6 +56,10 @@ const GearShare = () => {
       queryClient.invalidateQueries({ queryKey: ['items'] });
     },
   });
+
+  if (isLoading) {
+    return <Spinner />;
+  }
 
   return (
     <>
@@ -173,7 +181,7 @@ const GearShare = () => {
                   mt="20px"
                   gap="50px"
                 >
-                  {items.data
+                  {items
                     ?.sort((a, b) => a.id - b.id)
                     .map((item) => (
                       <BookingItem
@@ -207,7 +215,7 @@ const GearShare = () => {
                             onChange={() => handleUnselectItem(id)}
                             mr={4}
                           >
-                            {items.data?.find((i) => i.id === id)?.title}
+                            {items?.find((i) => i.id === id)?.title}
                           </Checkbox>
                         </ListItem>
                       ))}
