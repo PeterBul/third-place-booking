@@ -16,5 +16,6 @@ declare module '@tanstack/table-core' {
       id: string | number;
       displayValue: string;
     }[];
+    allowNull?: boolean;
   }
 }

@@ -28,6 +28,7 @@ export function SelectCell<T>({
         return setValue(e.target.value);
       }}
       border={0}
+      placeholder="Select an option"
     >
       {column.columnDef.meta?.options?.map((option) => {
         return (

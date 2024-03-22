@@ -7,9 +7,9 @@ const styles = {
     svg: {
       cursor: 'pointer',
     },
-    '.table': {
-      border: '1px solid #424242',
-    },
+    // '.table': {
+    //   border: '1px solid #424242',
+    // },
     '.tr': {
       display: 'flex',
       width: 'fit-content',
