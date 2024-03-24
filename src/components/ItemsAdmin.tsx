@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Box, Button, Flex, Icon } from '@chakra-ui/react';
+import { Box, Icon } from '@chakra-ui/react';
 import {
   SortDirection,
   flexRender,
@@ -17,6 +17,8 @@ import { createItem, editItem, getItems } from '../api/items';
 import { getImages } from '../api/images';
 import { SelectCell } from './Table/SelectCell';
 import { DeleteCell } from './Table/DeleteCell';
+import { NewItemButton } from './NewItemButton';
+import { useNewItem } from '../hooks/useNewItem';
 
 export const newId = 1000000000;
 
@@ -86,24 +88,37 @@ const ItemsAdmin = () => {
     },
   });
 
-  const [newItem, setNewItem] = useState<{
+  const handleSave = (newItem: {
     id: number;
     title: string;
     description: string;
     imageId: number | undefined;
-  }>();
+  }) => {
+    if (newItem.imageId !== undefined) {
+      newItem.imageId = +newItem.imageId;
+    }
+    createItemMutation.mutate(newItem);
+  };
 
-  const startAddingItem = () => {
-    setNewItem({
+  const {
+    newItem,
+    startAddingItem,
+    cancelAddingItem,
+    saveNewItem,
+    updateNewItem,
+    addItemToData,
+  } = useNewItem(
+    {
       id: newId,
       title: '',
       description: '',
-      imageId: undefined,
-    });
-  };
+      imageId: undefined as number | undefined,
+    },
+    handleSave
+  );
 
   const data = useMemo(() => {
-    const returnData =
+    return addItemToData(
       items
         ?.sort((a, b) => (a.id ?? 0) - (b.id ?? 0))
         .map((item) => {
@@ -113,12 +128,9 @@ const ItemsAdmin = () => {
             description: item.description,
             imageId: item.image?.id,
           };
-        }) ?? [];
-    if (newItem) {
-      returnData.push(newItem);
-    }
-    return returnData;
-  }, [items, newItem]);
+        }) ?? []
+    );
+  }, [addItemToData, items]);
 
   const table = useReactTable({
     data,
@@ -138,13 +150,7 @@ const ItemsAdmin = () => {
         value: TValue | boolean
       ) => {
         if (rowId === newId.toString()) {
-          setNewItem((prev) => {
-            if (!prev) return prev;
-            return {
-              ...prev,
-              [columnId]: value,
-            };
-          });
+          updateNewItem(columnId, value);
           return;
         }
 
@@ -229,24 +235,12 @@ const ItemsAdmin = () => {
           </Box>
         ))}
       </Box>
-      {newItem ? (
-        <Flex mt={4} gap={4}>
-          <Button onClick={() => setNewItem(undefined)}>Cancel</Button>
-          <Button
-            onClick={() => {
-              setNewItem(undefined);
-              if (!newItem) return;
-              createItemMutation.mutate(newItem);
-            }}
-          >
-            Save
-          </Button>
-        </Flex>
-      ) : (
-        <Button mt={4} onClick={startAddingItem}>
-          Add Item
-        </Button>
-      )}
+      <NewItemButton
+        newItem={newItem}
+        onCancelAddingItem={cancelAddingItem}
+        onSave={saveNewItem}
+        onStartAddingItem={startAddingItem}
+      />
     </Box>
   );
 };

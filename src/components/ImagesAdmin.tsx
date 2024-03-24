@@ -13,8 +13,10 @@ import { useMemo, useState } from 'react';
 import { Filters } from './Table/Filters';
 import { MdArrowDownward, MdArrowUpward, MdSwapVert } from 'react-icons/md';
 import { EditableCell } from './Table/EditableCell';
-import { editImage, getImages } from '../api/images';
+import { createImage, editImage, getImages } from '../api/images';
 import { CheckmarkCell } from './Table/CheckmarkCell';
+import { NewItemButton, newId } from './NewItemButton';
+import { useNewItem } from '../hooks/useNewItem';
 
 const ImagesAdmin = () => {
   // const [users, setUsers] = useState<IUser[]>([]);
@@ -54,8 +56,32 @@ const ImagesAdmin = () => {
     },
   });
 
+  const createImageMutation = useMutation({
+    mutationFn: createImage,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['images'] });
+    },
+  });
+
+  const defaultImage = {
+    id: newId,
+    url: '',
+    alt: '',
+    isClippable: false,
+  };
+  const {
+    newItem,
+    cancelAddingItem,
+    saveNewItem,
+    startAddingItem,
+    updateNewItem,
+    addItemToData,
+  } = useNewItem(defaultImage, (newImage) => {
+    createImageMutation.mutate(newImage);
+  });
+
   const data = useMemo(() => {
-    return (
+    return addItemToData(
       images
         ?.sort((a, b) => (a.id ?? 0) - (b.id ?? 0))
         .map((image) => {
@@ -67,7 +93,7 @@ const ImagesAdmin = () => {
           };
         }) ?? []
     );
-  }, [images]);
+  }, [addItemToData, images]);
 
   const table = useReactTable({
     data,
@@ -86,6 +112,10 @@ const ImagesAdmin = () => {
         columnId: string,
         value: TValue | boolean
       ) => {
+        if (rowId === newId.toString()) {
+          updateNewItem(columnId, value);
+          return;
+        }
         const item = images?.find((image) => image.id === +rowId);
         if (!item) return;
         itemMutation.mutate({
@@ -137,6 +167,12 @@ const ImagesAdmin = () => {
           </Box>
         ))}
       </Box>
+      <NewItemButton
+        newItem={newItem}
+        onCancelAddingItem={cancelAddingItem}
+        onSave={saveNewItem}
+        onStartAddingItem={startAddingItem}
+      />
     </Box>
   );
 };

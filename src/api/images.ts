@@ -19,3 +19,9 @@ export const editImage = async (image: WithId<Partial<IImage>>) => {
     withCredentials: true,
   });
 };
+
+export const createImage = async (image: IImage) => {
+  return await axiosPrivate.post<IImage>('/images', image, {
+    withCredentials: true,
+  });
+};

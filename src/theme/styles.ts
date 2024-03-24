@@ -18,7 +18,6 @@ const styles = {
       boxShadow: 'inset 0 0 0 1px #424242',
       display: 'flex',
       alignItems: 'center',
-      padding: '0 0.5rem',
     },
     '.th': {
       position: 'relative',

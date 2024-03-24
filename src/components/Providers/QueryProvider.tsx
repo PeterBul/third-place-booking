@@ -61,6 +61,22 @@ export const QueryProvider = ({ children }: IProps) => {
               return false;
             },
           },
+          mutations: {
+            retry: (failureCount, error) => {
+              if (error instanceof AxiosError) {
+                // Don't retry for certain error responses
+                if (
+                  error?.response?.status === 400 ||
+                  error?.response?.status === 401
+                ) {
+                  refreshAuthTokens();
+                  return failureCount <= 1;
+                }
+              }
+
+              return false;
+            },
+          },
         },
       })
   );
