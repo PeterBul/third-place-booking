@@ -23,6 +23,7 @@ export function EditableCell<T>({
   return (
     <FormControl
       isInvalid={column.columnDef.meta?.allowNull === false && !value}
+      height={'100%'}
     >
       <Input
         value={value}
@@ -32,6 +33,8 @@ export function EditableCell<T>({
         overflow="hidden"
         textOverflow="ellipsis"
         whiteSpace="nowrap"
+        height={'100%'}
+        p={2}
       />
     </FormControl>
   );

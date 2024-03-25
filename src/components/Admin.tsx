@@ -34,8 +34,8 @@ const Admin = () => {
         <Tabs index={paths.indexOf(path)}>
           <TabList>
             {paths.map((p) => (
-              <Tab key={p}>
-                <Link to={p}>{capitalize(p)}</Link>
+              <Tab as={Link} key={p} to={p}>
+                {capitalize(p)}
               </Tab>
             ))}
           </TabList>

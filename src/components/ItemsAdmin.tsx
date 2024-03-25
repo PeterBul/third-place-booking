@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Box, Icon } from '@chakra-ui/react';
+import { Box, Icon, Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react';
 import {
   SortDirection,
   flexRender,
@@ -169,72 +169,78 @@ const ItemsAdmin = () => {
   return (
     <Box>
       <Filters globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} />
-      <Box className="table" w={table.getTotalSize()}>
-        {table.getHeaderGroups().map((headerGroup) => (
-          <Box className="tr" key={headerGroup.id}>
-            {headerGroup.headers.map((header) => (
-              <Box
-                className="th"
-                w={header.getSize()}
-                key={header.id}
-                border={
-                  header.column.columnDef.header === 'Delete'
-                    ? 'none'
-                    : undefined
-                }
-                boxShadow={
-                  header.column.columnDef.header === 'Delete'
-                    ? 'none'
-                    : undefined
-                }
-              >
-                {header.column.columnDef.header !== 'Delete' && (
-                  <>
-                    {flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
-                    {header.column.getCanSort() && (
-                      <Icon
-                        as={getSortIcon(header.column.getIsSorted())}
-                        mx={3}
-                        fontSize={14}
-                        onClick={header.column.getToggleSortingHandler()}
-                      />
-                    )}
-                    <Box
-                      onMouseDown={header.getResizeHandler()}
-                      onTouchStart={header.getResizeHandler()}
-                      className={`resizer ${
-                        header.column.getIsResizing() ? 'isResizing' : ''
-                      }`}
-                    ></Box>
-                  </>
-                )}
-              </Box>
-            ))}
-          </Box>
-        ))}
-        {table.getRowModel().rows.map((row) => (
-          <Box className="tr" key={row.id}>
-            {row.getVisibleCells().map((cell) => (
-              <Box
-                className="td"
-                w={cell.column.getSize()}
-                key={cell.id}
-                border={
-                  cell.column.columnDef.header === 'Delete' ? 'none' : undefined
-                }
-                boxShadow={
-                  cell.column.columnDef.header === 'Delete' ? 'none' : undefined
-                }
-              >
-                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-              </Box>
-            ))}
-          </Box>
-        ))}
-      </Box>
+      <Table w={table.getTotalSize()}>
+        <Thead>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <Tr key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <Th
+                  w={header.getSize()}
+                  key={header.id}
+                  border={
+                    header.column.columnDef.header === 'Delete'
+                      ? 'none'
+                      : undefined
+                  }
+                  boxShadow={
+                    header.column.columnDef.header === 'Delete'
+                      ? 'none'
+                      : undefined
+                  }
+                >
+                  {header.column.columnDef.header !== 'Delete' && (
+                    <>
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                      {header.column.getCanSort() && (
+                        <Icon
+                          as={getSortIcon(header.column.getIsSorted())}
+                          mx={3}
+                          fontSize={14}
+                          onClick={header.column.getToggleSortingHandler()}
+                        />
+                      )}
+                      <Box
+                        onMouseDown={header.getResizeHandler()}
+                        onTouchStart={header.getResizeHandler()}
+                        className={`resizer ${
+                          header.column.getIsResizing() ? 'isResizing' : ''
+                        }`}
+                      ></Box>
+                    </>
+                  )}
+                </Th>
+              ))}
+            </Tr>
+          ))}
+        </Thead>
+        <Tbody>
+          {table.getRowModel().rows.map((row) => (
+            <Tr key={row.id}>
+              {row.getVisibleCells().map((cell) => (
+                <Td
+                  w={cell.column.getSize()}
+                  key={cell.id}
+                  border={
+                    cell.column.columnDef.header === 'Delete'
+                      ? 'none'
+                      : undefined
+                  }
+                  boxShadow={
+                    cell.column.columnDef.header === 'Delete'
+                      ? 'none'
+                      : undefined
+                  }
+                >
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </Td>
+              ))}
+            </Tr>
+          ))}
+        </Tbody>
+      </Table>
       <NewItemButton
         newItem={newItem}
         onCancelAddingItem={cancelAddingItem}

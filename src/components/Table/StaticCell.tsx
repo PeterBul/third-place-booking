@@ -12,8 +12,7 @@ export function StaticCell<T>({ getValue }: CellContext<T, TValue>) {
       overflow="hidden"
       textOverflow="ellipsis"
       whiteSpace="nowrap"
-      p={'5.5px'}
-      m={'4px'}
+      p={2}
     >
       {value}
     </Text>

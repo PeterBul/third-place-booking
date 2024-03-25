@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Box, Icon } from '@chakra-ui/react';
+import { Box, Icon, Table, Td, Th, Tr } from '@chakra-ui/react';
 import {
   SortDirection,
   flexRender,
@@ -129,11 +129,11 @@ const ImagesAdmin = () => {
   return (
     <Box>
       <Filters globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} />
-      <Box className="table" w={table.getTotalSize()}>
+      <Box as={Table} w={table.getTotalSize()}>
         {table.getHeaderGroups().map((headerGroup) => (
-          <Box className="tr" key={headerGroup.id}>
+          <Box as={Tr} key={headerGroup.id}>
             {headerGroup.headers.map((header) => (
-              <Box className="th" w={header.getSize()} key={header.id}>
+              <Box as={Th} w={header.getSize()} key={header.id}>
                 {flexRender(
                   header.column.columnDef.header,
                   header.getContext()
@@ -158,9 +158,9 @@ const ImagesAdmin = () => {
           </Box>
         ))}
         {table.getRowModel().rows.map((row) => (
-          <Box className="tr" key={row.id}>
+          <Box as={Tr} key={row.id}>
             {row.getVisibleCells().map((cell) => (
-              <Box className="td" w={cell.column.getSize()} key={cell.id}>
+              <Box as={Td} w={cell.column.getSize()} key={cell.id}>
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
               </Box>
             ))}

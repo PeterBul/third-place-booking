@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getMe, getUsers } from '../api/users';
-import { Box, Icon } from '@chakra-ui/react';
+import { Box, Icon, Table, Th, Tr } from '@chakra-ui/react';
 import {
   SortDirection,
   flexRender,
@@ -148,11 +148,16 @@ const BookingsAdmin = () => {
         isMeFilterActive={isMeFilterActive}
         toggleMeFilter={toggleMeFilter}
       />
-      <Box className="table" w={table.getTotalSize()}>
+      <Table w={table.getTotalSize()}>
         {table.getHeaderGroups().map((headerGroup) => (
-          <Box className="tr" key={headerGroup.id}>
+          <Tr className="tr" key={headerGroup.id}>
             {headerGroup.headers.map((header) => (
-              <Box className="th" w={header.getSize()} key={header.id}>
+              <Th
+                className="th"
+                w={header.getSize()}
+                key={header.id}
+                border={0}
+              >
                 {flexRender(
                   header.column.columnDef.header,
                   header.getContext()
@@ -172,20 +177,20 @@ const BookingsAdmin = () => {
                     header.column.getIsResizing() ? 'isResizing' : ''
                   }`}
                 ></Box>
-              </Box>
+              </Th>
             ))}
-          </Box>
+          </Tr>
         ))}
         {table.getRowModel().rows.map((row) => (
-          <Box className="tr" key={row.id}>
+          <Tr className="tr" key={row.id}>
             {row.getVisibleCells().map((cell) => (
               <Box className="td" w={cell.column.getSize()} key={cell.id}>
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
               </Box>
             ))}
-          </Box>
+          </Tr>
         ))}
-      </Box>
+      </Table>
     </Box>
   );
 };
