@@ -22,7 +22,7 @@ export function CheckmarkCell<T>({
   };
 
   return (
-    <Center w="100%">
+    <Center w="100%" px={2}>
       <Checkbox
         isChecked={value}
         onChange={(e) => onChange(e.target.checked)}

@@ -5,6 +5,7 @@ import { cardTheme } from './card';
 import { textTheme } from './text';
 import { alertTheme } from './alert.theme';
 import { tableTheme } from './table';
+import { buttonTheme } from './button.theme';
 
 const config: ThemeConfig = {
   initialColorMode: 'dark',
@@ -15,11 +16,12 @@ const theme = extendTheme({
   config,
   styles,
   components: {
-    Heading,
-    Card: cardTheme,
-    Text: textTheme,
     Alert: alertTheme,
+    Button: buttonTheme,
+    Card: cardTheme,
+    Heading,
     Table: tableTheme,
+    Text: textTheme,
   },
 });
 

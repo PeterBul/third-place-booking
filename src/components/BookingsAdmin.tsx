@@ -1,6 +1,18 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getMe, getUsers } from '../api/users';
-import { Box, Icon, Table, Th, Tr } from '@chakra-ui/react';
+import {
+  Box,
+  Card,
+  CardBody,
+  FormControl,
+  FormLabel,
+  Icon,
+  Show,
+  Table,
+  Th,
+  Tr,
+  VStack,
+} from '@chakra-ui/react';
 import {
   SortDirection,
   flexRender,
@@ -148,49 +160,83 @@ const BookingsAdmin = () => {
         isMeFilterActive={isMeFilterActive}
         toggleMeFilter={toggleMeFilter}
       />
-      <Table w={table.getTotalSize()}>
-        {table.getHeaderGroups().map((headerGroup) => (
-          <Tr className="tr" key={headerGroup.id}>
-            {headerGroup.headers.map((header) => (
-              <Th
-                className="th"
-                w={header.getSize()}
-                key={header.id}
-                border={0}
-              >
-                {flexRender(
-                  header.column.columnDef.header,
-                  header.getContext()
-                )}
-                {header.column.getCanSort() && (
-                  <Icon
-                    as={getSortIcon(header.column.getIsSorted())}
-                    mx={3}
-                    fontSize={14}
-                    onClick={header.column.getToggleSortingHandler()}
-                  />
-                )}
-                <Box
-                  onMouseDown={header.getResizeHandler()}
-                  onTouchStart={header.getResizeHandler()}
-                  className={`resizer ${
-                    header.column.getIsResizing() ? 'isResizing' : ''
-                  }`}
-                ></Box>
-              </Th>
+
+      <Show above="md">
+        <Box overflowX={'auto'}>
+          <Table w={table.getTotalSize()}>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <Tr className="tr" key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <Th
+                    className="th"
+                    w={header.getSize()}
+                    key={header.id}
+                    border={0}
+                  >
+                    {flexRender(
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
+                    {header.column.getCanSort() && (
+                      <Icon
+                        as={getSortIcon(header.column.getIsSorted())}
+                        mx={3}
+                        fontSize={14}
+                        onClick={header.column.getToggleSortingHandler()}
+                      />
+                    )}
+                    <Box
+                      onMouseDown={header.getResizeHandler()}
+                      onTouchStart={header.getResizeHandler()}
+                      className={`resizer ${
+                        header.column.getIsResizing() ? 'isResizing' : ''
+                      }`}
+                    ></Box>
+                  </Th>
+                ))}
+              </Tr>
             ))}
-          </Tr>
-        ))}
-        {table.getRowModel().rows.map((row) => (
-          <Tr className="tr" key={row.id}>
-            {row.getVisibleCells().map((cell) => (
-              <Box className="td" w={cell.column.getSize()} key={cell.id}>
-                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-              </Box>
+            {table.getRowModel().rows.map((row) => (
+              <Tr className="tr" key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <Box className="td" w={cell.column.getSize()} key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </Box>
+                ))}
+              </Tr>
             ))}
-          </Tr>
-        ))}
-      </Table>
+          </Table>
+        </Box>
+      </Show>
+
+      <Show below="md">
+        <VStack>
+          {table.getRowModel().rows.map((row) => (
+            <Card key={row.id} maxW={'md'}>
+              <CardBody>
+                {row.getVisibleCells().map((cell) => (
+                  <FormControl
+                    display={'flex'}
+                    my={2}
+                    key={cell.id}
+                    alignItems={'center'}
+                  >
+                    <FormLabel htmlFor={cell.id} minW={'140px'}>
+                      {cell.column.columnDef.header?.toString()}
+                    </FormLabel>
+                    <Box key={cell.id} id={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </Box>
+                  </FormControl>
+                ))}
+              </CardBody>
+            </Card>
+          ))}
+        </VStack>
+      </Show>
     </Box>
   );
 };

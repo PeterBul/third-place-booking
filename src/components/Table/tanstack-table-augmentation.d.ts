@@ -1,6 +1,7 @@
 import { TableMeta as OriginalTableMeta } from '@tanstack/table-core';
 import { ColumnMeta as OriginalColumnMeta } from '@tanstack/table-core';
 import { TValue } from './types';
+import { e_RenderType } from './e_RenderType';
 
 declare module '@tanstack/table-core' {
   interface TableMeta<TData extends RowData> extends OriginalTableMeta<TData> {
@@ -17,5 +18,6 @@ declare module '@tanstack/table-core' {
       displayValue: string;
     }[];
     allowNull?: boolean;
+    renderType?: e_RenderType;
   }
 }
