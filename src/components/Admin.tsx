@@ -29,7 +29,13 @@ const Admin = () => {
     : [];
 
   return (
-    <Container maxW={1000} mx="auto" px={6} pt={24} fontSize="sm">
+    <Container
+      maxW={{ base: 'md', md: '5xl' }}
+      mx="auto"
+      px={6}
+      pt={24}
+      fontSize="sm"
+    >
       {paths.length > 0 ? (
         <Tabs index={paths.indexOf(path)}>
           <TabList>

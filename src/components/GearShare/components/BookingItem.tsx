@@ -30,6 +30,7 @@ export const BookingItem = (props: IProps) => {
       bg="white"
       color="gray.800"
       textAlign={'center'}
+      height={'fit-content'}
     >
       <Box
         as="span"
@@ -55,9 +56,9 @@ export const BookingItem = (props: IProps) => {
       <CardBody>
         <Stack>
           <Image
-            src={props.item.image.url}
-            alt={props.item.image.alt}
-            fit={props.item.image.isClippable ? 'cover' : 'contain'}
+            src={props.item.image?.url}
+            alt={props.item.image?.alt}
+            fit={props.item.image?.isClippable ? 'cover' : 'contain'}
             borderRadius="lg"
             height={200}
           />
@@ -72,6 +73,11 @@ export const BookingItem = (props: IProps) => {
           {props.item.bookings.map((booking) => (
             <BookingCard key={booking.id} booking={booking} />
           ))}
+          {props.item.bookings.length === 0 && (
+            <Box p={4} color="gray.500">
+              This item has no bookings
+            </Box>
+          )}
         </Stack>
       </CardBody>
     </Card>

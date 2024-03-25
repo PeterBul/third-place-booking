@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Box,
+  Button,
   Card,
   CardBody,
   Flex,
@@ -13,6 +14,7 @@ import {
   Th,
   Tr,
   VStack,
+  useBreakpointValue,
 } from '@chakra-ui/react';
 import {
   SortDirection,
@@ -27,11 +29,11 @@ import { useMemo, useState } from 'react';
 import { Filters } from './Table/Filters';
 import { MdArrowDownward, MdArrowUpward, MdSwapVert } from 'react-icons/md';
 import { EditableCell } from './Table/EditableCell';
-import { createImage, editImage, getImages } from '../api/images';
+import { createImage, deleteImage, editImage, getImages } from '../api/images';
 import { CheckmarkCell } from './Table/CheckmarkCell';
 import { NewItemButton, newId } from './NewItemButton';
 import { useNewItem } from '../hooks/useNewItem';
-import { e_RenderType } from './Table/e_RenderType';
+import { DeleteCell } from './Table/DeleteCell';
 
 const ImagesAdmin = () => {
   // const [users, setUsers] = useState<IUser[]>([]);
@@ -41,6 +43,9 @@ const ImagesAdmin = () => {
     queryFn: getImages,
   });
 
+  const isClippablePadding = useBreakpointValue({ base: 0, md: 2 });
+  const centerCheckmark = useBreakpointValue({ base: false, md: true });
+
   const columns = [
     {
       header: 'Alt',
@@ -48,17 +53,41 @@ const ImagesAdmin = () => {
       cell: EditableCell,
     },
     {
-      header: 'url',
+      header: 'Url',
       accessorKey: 'url',
       cell: EditableCell,
-      size: 600,
+      size: 500,
+      meta: {
+        allowNull: false,
+      },
     },
     {
       header: 'Clippable',
       accessorKey: 'isClippable',
       cell: CheckmarkCell,
+      size: 120,
       meta: {
-        renderType: e_RenderType.checkbox,
+        center: centerCheckmark,
+        props: {
+          p: isClippablePadding,
+        },
+      },
+    },
+    {
+      header: 'Delete',
+      accessorKey: 'id',
+      enableSorting: false,
+      enableColumnFilter: false,
+      enableResizing: false,
+
+      cell: DeleteCell,
+      size: 40,
+
+      meta: {
+        deleteCell: {
+          mutation: deleteImage,
+          invalidateKey: 'images',
+        },
       },
     },
   ];
@@ -144,6 +173,13 @@ const ImagesAdmin = () => {
     },
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: deleteImage,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['images'] });
+    },
+  });
+
   return (
     <Box>
       <Filters globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} />
@@ -153,34 +189,65 @@ const ImagesAdmin = () => {
             {table.getHeaderGroups().map((headerGroup) => (
               <Box as={Tr} key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <Box as={Th} w={header.getSize()} key={header.id}>
-                    {flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
+                  <Th
+                    w={`${header.getSize()}px`}
+                    key={header.id}
+                    border={
+                      header.column.columnDef.header === 'Delete'
+                        ? 'none'
+                        : undefined
+                    }
+                    boxShadow={
+                      header.column.columnDef.header === 'Delete'
+                        ? 'none'
+                        : undefined
+                    }
+                  >
+                    {header.column.columnDef.header !== 'Delete' && (
+                      <>
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                        {header.column.getCanSort() && (
+                          <Icon
+                            as={getSortIcon(header.column.getIsSorted())}
+                            mx={3}
+                            fontSize={14}
+                            onClick={header.column.getToggleSortingHandler()}
+                          />
+                        )}
+                        <Box
+                          onMouseDown={header.getResizeHandler()}
+                          onTouchStart={header.getResizeHandler()}
+                          className={`resizer ${
+                            header.column.getIsResizing() ? 'isResizing' : ''
+                          }`}
+                        ></Box>
+                      </>
                     )}
-                    {header.column.getCanSort() && (
-                      <Icon
-                        as={getSortIcon(header.column.getIsSorted())}
-                        mx={3}
-                        fontSize={14}
-                        onClick={header.column.getToggleSortingHandler()}
-                      />
-                    )}
-                    <Box
-                      onMouseDown={header.getResizeHandler()}
-                      onTouchStart={header.getResizeHandler()}
-                      className={`resizer ${
-                        header.column.getIsResizing() ? 'isResizing' : ''
-                      }`}
-                    ></Box>
-                  </Box>
+                  </Th>
                 ))}
               </Box>
             ))}
             {table.getRowModel().rows.map((row) => (
               <Box as={Tr} key={row.id}>
                 {row.getVisibleCells().map((cell) => (
-                  <Box as={Td} w={cell.column.getSize()} key={cell.id}>
+                  <Box
+                    as={Td}
+                    w={`${cell.column.getSize()}px`}
+                    key={cell.id}
+                    border={
+                      cell.column.columnDef.header === 'Delete'
+                        ? 'none'
+                        : undefined
+                    }
+                    boxShadow={
+                      cell.column.columnDef.header === 'Delete'
+                        ? 'none'
+                        : undefined
+                    }
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </Box>
                 ))}
@@ -193,30 +260,41 @@ const ImagesAdmin = () => {
       <Show below="md">
         <VStack>
           {table.getRowModel().rows.map((row) => (
-            <Card key={row.id} maxW={'md'}>
+            <Card key={row.id} w={'100%'}>
               <CardBody>
-                {row.getVisibleCells().map((cell) => (
-                  <FormControl
-                    display={'flex'}
-                    my={2}
-                    key={cell.id}
-                    alignItems={'center'}
-                  >
-                    <FormLabel
-                      htmlFor={cell.id}
-                      minWidth={'80px'}
+                {row.getVisibleCells().map((cell) =>
+                  cell.column.columnDef.header?.toString() === 'Delete' ? (
+                    <Button
+                      variant={'deleteOutline'}
+                      w={'100%'}
+                      onClick={() => deleteMutation.mutate(+cell.row.id)}
+                      key={cell.id}
+                    >
+                      Delete
+                    </Button>
+                  ) : (
+                    <FormControl
+                      display={'flex'}
+                      my={2}
+                      key={cell.id}
                       alignItems={'center'}
                     >
-                      {cell.column.columnDef.header?.toString()}
-                    </FormLabel>
-                    <Flex key={cell.id} id={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </Flex>
-                  </FormControl>
-                ))}
+                      <FormLabel
+                        htmlFor={cell.id}
+                        minWidth={'80px'}
+                        alignItems={'center'}
+                      >
+                        {cell.column.columnDef.header?.toString()}
+                      </FormLabel>
+                      <Flex key={cell.id} id={cell.id} flex={1}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </Flex>
+                    </FormControl>
+                  )
+                )}
               </CardBody>
             </Card>
           ))}

@@ -12,6 +12,7 @@ import {
   Th,
   Tr,
   VStack,
+  useBreakpointValue,
 } from '@chakra-ui/react';
 import {
   SortDirection,
@@ -30,38 +31,6 @@ import { MdArrowDownward, MdArrowUpward, MdSwapVert } from 'react-icons/md';
 import { editBooking, getBookings } from '../api/bookings';
 import moment from 'moment';
 
-const columns = [
-  {
-    header: 'Borrowed By',
-    accessorKey: 'borrowedBy',
-    cell: StaticCell,
-  },
-  {
-    header: 'Rented From',
-    accessorKey: 'rentedFrom',
-    cell: StaticCell,
-  },
-  {
-    header: 'Rented To',
-    accessorKey: 'rentedTo',
-    cell: StaticCell,
-  },
-  {
-    header: 'Status',
-    accessorKey: 'status',
-    cell: StaticCell,
-  },
-  {
-    header: 'Is Picked Up',
-    accessorKey: 'isPickedUp',
-    cell: CheckmarkCell,
-  },
-  {
-    header: 'Is Returned',
-    accessorKey: 'isReturned',
-    cell: CheckmarkCell,
-  },
-];
 const BookingsAdmin = () => {
   // const [users, setUsers] = useState<IUser[]>([]);
   const { data: users } = useQuery({ queryKey: ['users'], queryFn: getUsers });
@@ -72,6 +41,52 @@ const BookingsAdmin = () => {
   const { data: me } = useQuery({ queryKey: ['me'], queryFn: getMe });
   const queryClient = useQueryClient();
 
+  const centerCheckmark = useBreakpointValue({ base: false, md: true });
+
+  const columns = [
+    {
+      header: 'Borrowed By',
+      accessorKey: 'borrowedBy',
+      cell: StaticCell,
+    },
+    {
+      header: 'Rented From',
+      accessorKey: 'rentedFrom',
+      cell: StaticCell,
+    },
+    {
+      header: 'Rented To',
+      accessorKey: 'rentedTo',
+      cell: StaticCell,
+    },
+    {
+      header: 'Status',
+      accessorKey: 'status',
+      cell: StaticCell,
+    },
+    {
+      header: 'Is Picked Up',
+      accessorKey: 'isPickedUp',
+      cell: CheckmarkCell,
+      meta: {
+        center: centerCheckmark,
+        props: {
+          px: 2,
+        },
+      },
+    },
+    {
+      header: 'Is Returned',
+      accessorKey: 'isReturned',
+      cell: CheckmarkCell,
+      meta: {
+        center: centerCheckmark,
+        props: {
+          px: 2,
+        },
+      },
+    },
+  ];
   const [globalFilter, setGlobalFilter] = useState('');
 
   const [isMeFilterActive, setIsMeFilterActive] = useState(false);
@@ -169,7 +184,7 @@ const BookingsAdmin = () => {
                 {headerGroup.headers.map((header) => (
                   <Th
                     className="th"
-                    w={header.getSize()}
+                    w={`${header.getSize()}px`}
                     key={header.id}
                     border={0}
                   >
@@ -199,7 +214,11 @@ const BookingsAdmin = () => {
             {table.getRowModel().rows.map((row) => (
               <Tr className="tr" key={row.id}>
                 {row.getVisibleCells().map((cell) => (
-                  <Box className="td" w={cell.column.getSize()} key={cell.id}>
+                  <Box
+                    className="td"
+                    w={`${cell.column.getSize()}px`}
+                    key={cell.id}
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </Box>
                 ))}
@@ -212,7 +231,7 @@ const BookingsAdmin = () => {
       <Show below="md">
         <VStack>
           {table.getRowModel().rows.map((row) => (
-            <Card key={row.id} maxW={'md'}>
+            <Card key={row.id} w={'100%'}>
               <CardBody>
                 {row.getVisibleCells().map((cell) => (
                   <FormControl
@@ -221,10 +240,15 @@ const BookingsAdmin = () => {
                     key={cell.id}
                     alignItems={'center'}
                   >
-                    <FormLabel htmlFor={cell.id} minW={'140px'}>
+                    <FormLabel htmlFor={cell.id} minW={'120px'}>
                       {cell.column.columnDef.header?.toString()}
                     </FormLabel>
-                    <Box key={cell.id} id={cell.id}>
+                    <Box
+                      key={cell.id}
+                      id={cell.id}
+                      flex={1}
+                      overflow={'hidden'}
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()

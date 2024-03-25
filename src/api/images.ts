@@ -25,3 +25,11 @@ export const createImage = async (image: IImage) => {
     withCredentials: true,
   });
 };
+
+export const deleteImage = async (id: number) => {
+  return (
+    await axiosPrivate.delete<void>(`/images/${id}`, {
+      withCredentials: true,
+    })
+  ).data;
+};

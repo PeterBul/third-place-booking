@@ -15,6 +15,7 @@ import {
   Thead,
   Tr,
   VStack,
+  useBreakpointValue,
 } from '@chakra-ui/react';
 import {
   SortDirection,
@@ -35,7 +36,6 @@ import { SelectCell } from './Table/SelectCell';
 import { DeleteCell } from './Table/DeleteCell';
 import { NewItemButton } from './NewItemButton';
 import { useNewItem } from '../hooks/useNewItem';
-import { DeleteItemButton } from './DeleteButton';
 
 export const newId = 1000000000;
 
@@ -50,6 +50,8 @@ const ItemsAdmin = () => {
     queryFn: getImages,
   });
 
+  const imagePadding = useBreakpointValue({ base: 0, md: 2 });
+
   const columns = [
     {
       header: 'Title',
@@ -63,16 +65,21 @@ const ItemsAdmin = () => {
       header: 'Description',
       accessorKey: 'description',
       cell: EditableCell,
+      size: 300,
     },
     {
       header: 'Image',
       accessorKey: 'imageId',
       cell: SelectCell,
+      size: 200,
       meta: {
         options: images.data?.map((image) => ({
           id: image.id,
           displayValue: image.alt,
         })),
+        props: {
+          p: imagePadding,
+        },
       },
     },
     {
@@ -83,7 +90,13 @@ const ItemsAdmin = () => {
       enableResizing: false,
 
       cell: DeleteCell,
-      size: 1,
+      size: 40,
+      meta: {
+        deleteCell: {
+          mutation: deleteItem,
+          invalidateKey: 'items',
+        },
+      },
     },
   ];
 
@@ -194,91 +207,97 @@ const ItemsAdmin = () => {
     <Box>
       <Filters globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} />
       <Show above="md">
-        <Table w={table.getTotalSize()}>
-          <Thead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <Tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <Th
-                    w={header.getSize()}
-                    key={header.id}
-                    border={
-                      header.column.columnDef.header === 'Delete'
-                        ? 'none'
-                        : undefined
-                    }
-                    boxShadow={
-                      header.column.columnDef.header === 'Delete'
-                        ? 'none'
-                        : undefined
-                    }
-                  >
-                    {header.column.columnDef.header !== 'Delete' && (
-                      <>
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                        {header.column.getCanSort() && (
-                          <Icon
-                            as={getSortIcon(header.column.getIsSorted())}
-                            mx={3}
-                            fontSize={14}
-                            onClick={header.column.getToggleSortingHandler()}
-                          />
-                        )}
-                        <Box
-                          onMouseDown={header.getResizeHandler()}
-                          onTouchStart={header.getResizeHandler()}
-                          className={`resizer ${
-                            header.column.getIsResizing() ? 'isResizing' : ''
-                          }`}
-                        ></Box>
-                      </>
-                    )}
-                  </Th>
-                ))}
-              </Tr>
-            ))}
-          </Thead>
-          <Tbody>
-            {table.getRowModel().rows.map((row) => (
-              <Tr key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <Td
-                    w={cell.column.getSize()}
-                    key={cell.id}
-                    border={
-                      cell.column.columnDef.header === 'Delete'
-                        ? 'none'
-                        : undefined
-                    }
-                    boxShadow={
-                      cell.column.columnDef.header === 'Delete'
-                        ? 'none'
-                        : undefined
-                    }
-                  >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </Td>
-                ))}
-              </Tr>
-            ))}
-          </Tbody>
-        </Table>
+        <Box overflowX={'auto'}>
+          <Table w={table.getTotalSize()}>
+            <Thead>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <Tr key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <Th
+                      w={`${header.getSize()}px`}
+                      key={header.id}
+                      border={
+                        header.column.columnDef.header === 'Delete'
+                          ? 'none'
+                          : undefined
+                      }
+                      boxShadow={
+                        header.column.columnDef.header === 'Delete'
+                          ? 'none'
+                          : undefined
+                      }
+                    >
+                      {header.column.columnDef.header !== 'Delete' && (
+                        <>
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                          {header.column.getCanSort() && (
+                            <Icon
+                              as={getSortIcon(header.column.getIsSorted())}
+                              mx={3}
+                              fontSize={14}
+                              onClick={header.column.getToggleSortingHandler()}
+                            />
+                          )}
+                          <Box
+                            onMouseDown={header.getResizeHandler()}
+                            onTouchStart={header.getResizeHandler()}
+                            className={`resizer ${
+                              header.column.getIsResizing() ? 'isResizing' : ''
+                            }`}
+                          ></Box>
+                        </>
+                      )}
+                    </Th>
+                  ))}
+                </Tr>
+              ))}
+            </Thead>
+            <Tbody>
+              {table.getRowModel().rows.map((row) => (
+                <Tr key={row.id}>
+                  {row.getVisibleCells().map((cell) => (
+                    <Td
+                      w={`${cell.column.getSize()}px`}
+                      key={cell.id}
+                      border={
+                        cell.column.columnDef.header === 'Delete'
+                          ? 'none'
+                          : undefined
+                      }
+                      boxShadow={
+                        cell.column.columnDef.header === 'Delete'
+                          ? 'none'
+                          : undefined
+                      }
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </Td>
+                  ))}
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        </Box>
       </Show>
 
       <Show below="md">
         <VStack>
           {table.getRowModel().rows.map((row) => (
-            <Card key={row.id} maxW={'md'}>
+            <Card key={row.id} width={'100%'}>
               <CardBody>
                 {row.getVisibleCells().map((cell) =>
                   cell.column.columnDef.header?.toString() === 'Delete' ? (
                     <Button
-                      variant={'delete'}
+                      variant={'deleteOutline'}
                       w={'100%'}
                       onClick={() => deleteMutation.mutate(+cell.row.id)}
+                      key={cell.id}
                     >
                       Delete
                     </Button>
@@ -292,11 +311,10 @@ const ItemsAdmin = () => {
                       <FormLabel htmlFor={cell.id} flexBasis={'120px'}>
                         {cell.column.columnDef.header?.toString()}
                       </FormLabel>
-                      <Box key={cell.id} id={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
+                      <Box key={cell.id} id={cell.id} flex={1}>
+                        {flexRender(cell.column.columnDef.cell, {
+                          ...cell.getContext(),
+                        })}
                       </Box>
                     </FormControl>
                   )

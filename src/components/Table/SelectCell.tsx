@@ -23,6 +23,7 @@ export function SelectCell<T>({
   return (
     <Select
       value={value}
+      variant={'flushedP2'}
       onChange={(e) => {
         onChange(e.target.value);
         return setValue(e.target.value);

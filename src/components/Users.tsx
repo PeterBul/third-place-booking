@@ -13,6 +13,7 @@ import {
   Th,
   Tr,
   VStack,
+  useBreakpointValue,
 } from '@chakra-ui/react';
 import {
   SortDirection,
@@ -29,41 +30,60 @@ import { CheckmarkCell } from './Table/CheckmarkCell';
 import { useState } from 'react';
 import { Filters } from './Table/Filters';
 import { MdArrowDownward, MdArrowUpward, MdSwapVert } from 'react-icons/md';
-import { Form } from 'react-router-dom';
 
-const columns = [
-  {
-    header: 'First Name',
-    accessorKey: 'firstName',
-    cell: EditableCell,
-  },
-  {
-    header: 'Last Name',
-    accessorKey: 'lastName',
-    cell: EditableCell,
-  },
-  {
-    header: 'Email',
-    accessorKey: 'email',
-    cell: StaticCell,
-  },
-  {
-    header: 'Phone',
-    accessorKey: 'phone',
-    cell: StaticCell,
-  },
-  {
-    header: 'Member Third Place',
-    accessorKey: 'isMemberThirdPlace',
-    cell: CheckmarkCell,
-  },
-  {
-    header: 'Member Bloom',
-    accessorKey: 'isMemberBloom',
-    cell: CheckmarkCell,
-  },
-];
 const Users = () => {
+  const emailPadding = useBreakpointValue({ base: 0, md: 2 });
+  const centerCheckmark = useBreakpointValue({ base: false, md: true });
+
+  const columns = [
+    {
+      header: 'First Name',
+      accessorKey: 'firstName',
+      cell: EditableCell,
+    },
+    {
+      header: 'Last Name',
+      accessorKey: 'lastName',
+      cell: EditableCell,
+    },
+    {
+      header: 'Email',
+      accessorKey: 'email',
+      cell: StaticCell,
+      meta: {
+        props: {
+          p: emailPadding,
+        },
+      },
+    },
+    {
+      header: 'Phone',
+      accessorKey: 'phone',
+      cell: StaticCell,
+    },
+    {
+      header: 'Member Third Place',
+      accessorKey: 'isMemberThirdPlace',
+      cell: CheckmarkCell,
+      meta: {
+        center: centerCheckmark,
+        props: {
+          px: 2,
+        },
+      },
+    },
+    {
+      header: 'Member Bloom',
+      accessorKey: 'isMemberBloom',
+      cell: CheckmarkCell,
+      meta: {
+        center: centerCheckmark,
+        props: {
+          px: 2,
+        },
+      },
+    },
+  ];
   // const [users, setUsers] = useState<IUser[]>([]);
   const { data: users } = useQuery({ queryKey: ['users'], queryFn: getUsers });
 
@@ -105,7 +125,7 @@ const Users = () => {
             {table.getHeaderGroups().map((headerGroup) => (
               <Box as={Tr} key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <Box as={Th} w={header.getSize()} key={header.id}>
+                  <Box as={Th} w={`${header.getSize()}px`} key={header.id}>
                     {flexRender(
                       header.column.columnDef.header,
                       header.getContext()
@@ -132,7 +152,7 @@ const Users = () => {
             {table.getRowModel().rows.map((row) => (
               <Box as={Tr} key={row.id}>
                 {row.getVisibleCells().map((cell) => (
-                  <Td w={cell.column.getSize()} key={cell.id}>
+                  <Td w={`${cell.column.getSize()}px`} key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </Td>
                 ))}
@@ -145,7 +165,7 @@ const Users = () => {
       <Show below="md">
         <VStack>
           {table.getRowModel().rows.map((row) => (
-            <Card key={row.id} maxW={'md'}>
+            <Card key={row.id} w={'100%'}>
               <CardBody>
                 {row.getVisibleCells().map((cell) => (
                   <FormControl
@@ -153,11 +173,12 @@ const Users = () => {
                     my={2}
                     key={cell.id}
                     alignItems={'center'}
+                    flexWrap={'wrap'}
                   >
                     <FormLabel htmlFor={cell.id} minW={'150px'}>
                       {cell.column.columnDef.header?.toString()}
                     </FormLabel>
-                    <Box key={cell.id} id={cell.id}>
+                    <Box key={cell.id} id={cell.id} flex={1}>
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()

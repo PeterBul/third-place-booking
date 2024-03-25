@@ -21,12 +21,21 @@ export function CheckmarkCell<T>({
     setValue(value);
   };
 
+  const outlet = (
+    <Checkbox
+      isChecked={value}
+      onChange={(e) => onChange(e.target.checked)}
+      {...column.columnDef.meta?.props}
+    />
+  );
+
+  if (column.columnDef.meta?.center === false) {
+    return outlet;
+  }
+
   return (
-    <Center w="100%" px={2}>
-      <Checkbox
-        isChecked={value}
-        onChange={(e) => onChange(e.target.checked)}
-      />
+    <Center flex={1} px={2}>
+      {outlet}
     </Center>
   );
 }

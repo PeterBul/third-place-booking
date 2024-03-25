@@ -35,7 +35,7 @@ const Navbar = () => {
       zIndex={100}
       bgColor={'rgba(26, 32, 44, 0.60)'}
       backdropFilter={'blur(5px)'}
-      borderRadius={'20px'}
+      borderRadius={{ base: 0, md: '20px' }}
     >
       <Flex className="nav-items nav-items-left">
         <Button as={Link} variant={'ghost'} to="/">
