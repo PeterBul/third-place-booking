@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 import { useEffect, useState } from 'react';
 import useRefreshToken from '../hooks/useRefreshToken';
+import { Center, Spinner } from '@chakra-ui/react';
 
 const PersistentLogin = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -28,7 +29,23 @@ const PersistentLogin = () => {
   if (!persist) {
     return <Outlet />;
   }
-  return <>{isLoading ? <div>Loading...</div> : <Outlet />}</>;
+  return (
+    <>
+      {isLoading ? (
+        <Center h="100vh">
+          <Spinner
+            thickness="4px"
+            speed="0.65s"
+            emptyColor="gray.200"
+            color="blue.500"
+            size="xl"
+          />
+        </Center>
+      ) : (
+        <Outlet />
+      )}
+    </>
+  );
 };
 
 export default PersistentLogin;
