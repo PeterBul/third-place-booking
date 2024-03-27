@@ -12,7 +12,7 @@ export interface IItem {
 
 export const getItems = async () => {
   return (
-    await axiosPrivate.get<IItem[]>('/items', {
+    await axiosPrivate.get<IItem[]>('/api/items', {
       withCredentials: true,
     })
   ).data;
@@ -20,7 +20,7 @@ export const getItems = async () => {
 
 export const editItem = async (item: Partial<IItem> & { id: number }) => {
   return (
-    await axiosPrivate.patch<IItem>(`/items/${item.id}`, item, {
+    await axiosPrivate.patch<IItem>(`/api/items/${item.id}`, item, {
       withCredentials: true,
     })
   ).data;
@@ -28,7 +28,7 @@ export const editItem = async (item: Partial<IItem> & { id: number }) => {
 
 export const createItem = async (item: Partial<IItem>) => {
   return (
-    await axiosPrivate.post<IItem>('/items', item, {
+    await axiosPrivate.post<IItem>('/api/items', item, {
       withCredentials: true,
     })
   ).data;
@@ -36,7 +36,7 @@ export const createItem = async (item: Partial<IItem>) => {
 
 export const deleteItem = async (id: number) => {
   return (
-    await axiosPrivate.delete<void>(`/items/${id}`, {
+    await axiosPrivate.delete<void>(`/api/items/${id}`, {
       withCredentials: true,
     })
   ).data;

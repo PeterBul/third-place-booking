@@ -1,12 +1,7 @@
 import axios from 'axios';
 
-const baseURL = 'http://localhost:3334';
-
-export default axios.create({
-  baseURL,
-});
+export default axios.create();
 
 export const axiosPrivate = axios.create({
-  baseURL,
   withCredentials: true,
 });

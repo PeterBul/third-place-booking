@@ -14,7 +14,7 @@ export interface IUser {
 
 export const getUsers = async () => {
   return (
-    await axiosPrivate.get<IUser[]>('/users', {
+    await axiosPrivate.get<IUser[]>('/api/users', {
       withCredentials: true,
     })
   ).data;
@@ -22,13 +22,14 @@ export const getUsers = async () => {
 
 export const editUser = async (user: Partial<IUser> & { id: number }) => {
   return (
-    await axiosPrivate.patch<IUser>(`/users/${user.id}`, user, {
+    await axiosPrivate.patch<IUser>(`/api/users/${user.id}`, user, {
       withCredentials: true,
     })
   ).data;
 };
 
 export const getMe = async () => {
-  return (await axiosPrivate.get<IUser>('/users/me', { withCredentials: true }))
-    .data;
+  return (
+    await axiosPrivate.get<IUser>('/api/users/me', { withCredentials: true })
+  ).data;
 };

@@ -23,7 +23,7 @@ interface IBookingWithUserId extends IBooking {
 
 export const getBookings = async () => {
   return (
-    await axiosPrivate.get<IBookingWithUserId[]>('/bookings', {
+    await axiosPrivate.get<IBookingWithUserId[]>('/api/bookings', {
       withCredentials: true,
     })
   ).data;
@@ -31,7 +31,7 @@ export const getBookings = async () => {
 
 export const getBooking = async (id: number) => {
   return (
-    await axiosPrivate.get<IBookingWithItems>(`/bookings/${id}`, {
+    await axiosPrivate.get<IBookingWithItems>(`/api/bookings/${id}`, {
       withCredentials: true,
     })
   ).data;
@@ -40,14 +40,14 @@ export const getBooking = async (id: number) => {
 export const createBooking = async (
   booking: Omit<IBooking, 'id' | 'createdAt' | 'isPickedUp' | 'isReturned'>
 ) => {
-  return await axiosPrivate.post<IBooking>('/bookings', booking, {
+  return await axiosPrivate.post<IBooking>('/api/bookings', booking, {
     withCredentials: true,
   });
 };
 
 export const editBooking = async (booking: Partial<IBooking>) => {
   return await axiosPrivate.patch<IBooking>(
-    `/bookings/${booking.id}`,
+    `/api/bookings/${booking.id}`,
     booking,
     {
       withCredentials: true,

@@ -19,7 +19,7 @@ import { Button } from '@chakra-ui/button';
 // const USER_REGEX = /^[a-zA-Z][a-zA-Z0-9-_]{3,23}$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%]).{8,24}$/;
 const EMAIL_REGEX = /^[\w\-.]+@([\w-]+\.)+[\w-]{2,}$/;
-const REGISTER_URL = '/auth/signup';
+const REGISTER_URL = '/api/auth/signup';
 
 function Register() {
   const memberThirdPlaceRef = useRef<HTMLInputElement>(null);

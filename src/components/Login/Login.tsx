@@ -9,7 +9,7 @@ import { Button } from '@chakra-ui/button';
 import { Container, Stack } from '@chakra-ui/layout';
 import { Checkbox } from '@chakra-ui/checkbox';
 
-const LOGIN_URL = '/auth/signin';
+const LOGIN_URL = '/api/auth/signin';
 
 function Login() {
   const { setAuth, persist, setPersist } = useAuth();
