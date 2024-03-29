@@ -24,6 +24,7 @@ import {
   Stack,
   Text,
   Textarea,
+  Center,
 } from '@chakra-ui/react';
 import { Field, Formik, FormikProps } from 'formik';
 import { MdExpandLess, MdExpandMore } from 'react-icons/md';
@@ -60,7 +61,17 @@ const GearShare = () => {
   });
 
   if (isLoading) {
-    return <Spinner />;
+    return (
+      <Center h="100vh">
+        <Spinner
+          thickness="4px"
+          speed="0.65s"
+          emptyColor="gray.200"
+          color="blue.500"
+          size="xl"
+        />
+      </Center>
+    );
   }
 
   return (

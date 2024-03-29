@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Center,
   Drawer,
   DrawerBody,
   DrawerCloseButton,
@@ -42,7 +43,17 @@ export const BookingDrawer = (props: IProps) => {
   }
 
   if (isLoading || !booking) {
-    return <Spinner />;
+    return (
+      <Center h="100vh">
+        <Spinner
+          thickness="4px"
+          speed="0.65s"
+          emptyColor="gray.200"
+          color="blue.500"
+          size="xl"
+        />
+      </Center>
+    );
   }
 
   return (
