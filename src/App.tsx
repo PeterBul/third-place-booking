@@ -15,6 +15,8 @@ import Users from './components/Users';
 import BookingsAdmin from './components/BookingsAdmin';
 import ItemsAdmin from './components/ItemsAdmin';
 import ImagesAdmin from './components/ImagesAdmin';
+import { AllowOnlyUnconfirmed } from './components/AllowOnlyUnconfirmed';
+import { VerificationPage } from './components/VerificationPage';
 
 function App() {
   return (
@@ -28,6 +30,9 @@ function App() {
           <Route path="unauthorized" element={<Unauthorized />} />
 
           {/* protected routes */}
+          <Route element={<AllowOnlyUnconfirmed />}>
+            <Route path="/verification" element={<VerificationPage />} />
+          </Route>
           <Route element={<RequireAuth allowedRoles={[e_Roles.User]} />}>
             <Route path="/" element={<Home />} />
             <Route path="booking" element={<GearShare />} />

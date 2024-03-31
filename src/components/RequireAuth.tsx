@@ -12,6 +12,9 @@ const RequireAuth = ({ allowedRoles }: IProps) => {
   if (auth?.roles?.find((role) => allowedRoles?.includes(role))) {
     return <Outlet />;
   }
+  if (auth?.roles?.length === 0) {
+    return <Navigate to="/verification" state={{ from: location }} replace />;
+  }
   if (auth?.accessToken) {
     return <Navigate to="/unauthorized" state={{ from: location }} replace />;
   }

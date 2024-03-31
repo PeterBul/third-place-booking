@@ -93,7 +93,7 @@ function Register() {
       const roles = response.data.roles;
       // Can add roles here if we have added to the backend
       setAuth({ email, password: pwd, accessToken, roles });
-      navigate('/', { replace: true });
+      navigate('/verification', { replace: true });
     } catch (error) {
       if (!(error instanceof AxiosError)) {
         throw error;
