@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { getItems } from '../../api/items';
+import { IItem, getItems } from '../../api/items';
 import './GearShare.css';
 import { BookingItem } from './components/BookingItem';
 import {
@@ -199,6 +199,10 @@ const GearShare = () => {
               formik.getFieldMeta('pickupDate').touched &&
               formik.errors.pickupDate;
 
+            const itemsDict = items?.reduce((acc, item) => {
+              return { ...acc, [item.id]: item };
+            }, {} as Record<number, IItem>);
+
             return (
               <form onSubmit={formik.handleSubmit}>
                 <Box
@@ -234,17 +238,26 @@ const GearShare = () => {
                       </FormErrorMessage>
                     </FormControl>
                     <List>
-                      {formik.values.itemIds.map((id) => (
-                        <ListItem key={id} display="flex">
-                          <Checkbox
-                            isChecked
-                            onChange={() => handleUnselectItem(id)}
-                            mr={4}
-                          >
-                            {items?.find((i) => i.id === id)?.title}
-                          </Checkbox>
-                        </ListItem>
-                      ))}
+                      {formik.values.itemIds
+                        .sort((a, b) => {
+                          if (!itemsDict) {
+                            return 0;
+                          }
+                          return itemsDict[a].title.localeCompare(
+                            itemsDict[b].title
+                          );
+                        })
+                        .map((id) => (
+                          <ListItem key={id} display="flex">
+                            <Checkbox
+                              isChecked
+                              onChange={() => handleUnselectItem(id)}
+                              mr={4}
+                            >
+                              {items?.find((i) => i.id === id)?.title}
+                            </Checkbox>
+                          </ListItem>
+                        ))}
                     </List>
                     <Flex gap={4}>
                       <FormControl isRequired isInvalid={!!pickupDateError}>
