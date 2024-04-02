@@ -10,8 +10,10 @@ import {
   Icon,
   Show,
   Table,
+  Tbody,
   Td,
   Th,
+  Thead,
   Tr,
   VStack,
   useBreakpointValue,
@@ -185,75 +187,82 @@ const ImagesAdmin = () => {
       <Filters globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} />
       <Show above="md">
         <Box overflowX={'auto'}>
-          <Box as={Table} w={table.getTotalSize()}>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <Box as={Tr} key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <Th
-                    w={`${header.getSize()}px`}
-                    key={header.id}
-                    border={
-                      header.column.columnDef.header === 'Delete'
-                        ? 'none'
-                        : undefined
-                    }
-                    boxShadow={
-                      header.column.columnDef.header === 'Delete'
-                        ? 'none'
-                        : undefined
-                    }
-                  >
-                    {header.column.columnDef.header !== 'Delete' && (
-                      <>
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                        {header.column.getCanSort() && (
-                          <Icon
-                            as={getSortIcon(header.column.getIsSorted())}
-                            mx={3}
-                            fontSize={14}
-                            onClick={header.column.getToggleSortingHandler()}
-                          />
-                        )}
-                        <Box
-                          onMouseDown={header.getResizeHandler()}
-                          onTouchStart={header.getResizeHandler()}
-                          className={`resizer ${
-                            header.column.getIsResizing() ? 'isResizing' : ''
-                          }`}
-                        ></Box>
-                      </>
-                    )}
-                  </Th>
-                ))}
-              </Box>
-            ))}
-            {table.getRowModel().rows.map((row) => (
-              <Box as={Tr} key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <Box
-                    as={Td}
-                    w={`${cell.column.getSize()}px`}
-                    key={cell.id}
-                    border={
-                      cell.column.columnDef.header === 'Delete'
-                        ? 'none'
-                        : undefined
-                    }
-                    boxShadow={
-                      cell.column.columnDef.header === 'Delete'
-                        ? 'none'
-                        : undefined
-                    }
-                  >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </Box>
-                ))}
-              </Box>
-            ))}
-          </Box>
+          <Table w={table.getTotalSize()}>
+            <Thead>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <Tr key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <Th
+                      w={`${header.getSize()}px`}
+                      key={header.id}
+                      border={
+                        header.column.columnDef.header === 'Delete'
+                          ? 'none'
+                          : undefined
+                      }
+                      boxShadow={
+                        header.column.columnDef.header === 'Delete'
+                          ? 'none'
+                          : undefined
+                      }
+                    >
+                      {header.column.columnDef.header !== 'Delete' && (
+                        <>
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                          {header.column.getCanSort() && (
+                            <Icon
+                              as={getSortIcon(header.column.getIsSorted())}
+                              mx={3}
+                              fontSize={14}
+                              onClick={header.column.getToggleSortingHandler()}
+                            />
+                          )}
+                          <Box
+                            onMouseDown={header.getResizeHandler()}
+                            onTouchStart={header.getResizeHandler()}
+                            className={`resizer ${
+                              header.column.getIsResizing() ? 'isResizing' : ''
+                            }`}
+                          ></Box>
+                        </>
+                      )}
+                    </Th>
+                  ))}
+                </Tr>
+              ))}
+            </Thead>
+            <Tbody>
+              {table.getRowModel().rows.map((row) => (
+                <Tr key={row.id}>
+                  {row.getVisibleCells().map((cell) => (
+                    <Box
+                      as={Td}
+                      w={`${cell.column.getSize()}px`}
+                      key={cell.id}
+                      border={
+                        cell.column.columnDef.header === 'Delete'
+                          ? 'none'
+                          : undefined
+                      }
+                      boxShadow={
+                        cell.column.columnDef.header === 'Delete'
+                          ? 'none'
+                          : undefined
+                      }
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </Box>
+                  ))}
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
         </Box>
       </Show>
 

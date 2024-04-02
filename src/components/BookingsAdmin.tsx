@@ -9,7 +9,9 @@ import {
   Icon,
   Show,
   Table,
+  Tbody,
   Th,
+  Thead,
   Tr,
   VStack,
   useBreakpointValue,
@@ -179,51 +181,58 @@ const BookingsAdmin = () => {
       <Show above="md">
         <Box overflowX={'auto'}>
           <Table w={table.getTotalSize()}>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <Tr className="tr" key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <Th
-                    className="th"
-                    w={`${header.getSize()}px`}
-                    key={header.id}
-                    border={0}
-                  >
-                    {flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
-                    {header.column.getCanSort() && (
-                      <Icon
-                        as={getSortIcon(header.column.getIsSorted())}
-                        mx={3}
-                        fontSize={14}
-                        onClick={header.column.getToggleSortingHandler()}
-                      />
-                    )}
+            <Thead>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <Tr className="tr" key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <Th
+                      className="th"
+                      w={`${header.getSize()}px`}
+                      key={header.id}
+                      border={0}
+                    >
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                      {header.column.getCanSort() && (
+                        <Icon
+                          as={getSortIcon(header.column.getIsSorted())}
+                          mx={3}
+                          fontSize={14}
+                          onClick={header.column.getToggleSortingHandler()}
+                        />
+                      )}
+                      <Box
+                        onMouseDown={header.getResizeHandler()}
+                        onTouchStart={header.getResizeHandler()}
+                        className={`resizer ${
+                          header.column.getIsResizing() ? 'isResizing' : ''
+                        }`}
+                      ></Box>
+                    </Th>
+                  ))}
+                </Tr>
+              ))}
+            </Thead>
+            <Tbody>
+              {table.getRowModel().rows.map((row) => (
+                <Tr className="tr" key={row.id}>
+                  {row.getVisibleCells().map((cell) => (
                     <Box
-                      onMouseDown={header.getResizeHandler()}
-                      onTouchStart={header.getResizeHandler()}
-                      className={`resizer ${
-                        header.column.getIsResizing() ? 'isResizing' : ''
-                      }`}
-                    ></Box>
-                  </Th>
-                ))}
-              </Tr>
-            ))}
-            {table.getRowModel().rows.map((row) => (
-              <Tr className="tr" key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <Box
-                    className="td"
-                    w={`${cell.column.getSize()}px`}
-                    key={cell.id}
-                  >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </Box>
-                ))}
-              </Tr>
-            ))}
+                      className="td"
+                      w={`${cell.column.getSize()}px`}
+                      key={cell.id}
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </Box>
+                  ))}
+                </Tr>
+              ))}
+            </Tbody>
           </Table>
         </Box>
       </Show>
