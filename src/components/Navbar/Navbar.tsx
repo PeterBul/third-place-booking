@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { Box, Button, IconButton } from '@chakra-ui/react';
 import { CloseIcon, HamburgerIcon } from '@chakra-ui/icons';
 import { useLayoutEffect, useState } from 'react';
+import { e_Roles } from '../../enums';
 
 const Navbar = () => {
   const { auth } = useAuth();
@@ -20,6 +21,9 @@ const Navbar = () => {
       document.body.style.overflow = 'auto';
     }
   }, [display]);
+
+  const showAdminButton =
+    auth.roles?.includes(e_Roles.Member) || auth.roles?.includes(e_Roles.Admin);
 
   return (
     <Flex
@@ -51,9 +55,11 @@ const Navbar = () => {
             <Button as={Link} variant={'ghost'} to="/booking" mx={1}>
               Gear share
             </Button>
-            <Button as={Link} variant={'ghost'} to="/admin" mx={1}>
-              Admin
-            </Button>
+            {showAdminButton && (
+              <Button as={Link} variant={'ghost'} to="/admin" mx={1}>
+                Admin
+              </Button>
+            )}
             <Button
               className="nav-button"
               onClick={handleLogout}
@@ -121,9 +127,11 @@ const Navbar = () => {
           <Button as={Link} to="/booking" w={'85%'} my={5} variant={'ghost'}>
             Gear share
           </Button>
-          <Button as={Link} to="/admin" w={'85%'} my={5} variant={'ghost'}>
-            Admin
-          </Button>
+          {showAdminButton && (
+            <Button as={Link} to="/admin" w={'85%'} my={5} variant={'ghost'}>
+              Admin
+            </Button>
+          )}
           {isLoggedIn ? (
             <Button
               className="nav-button"

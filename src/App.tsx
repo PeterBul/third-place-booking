@@ -17,6 +17,7 @@ import ItemsAdmin from './components/ItemsAdmin';
 import ImagesAdmin from './components/ImagesAdmin';
 import { AllowOnlyUnconfirmed } from './components/AllowOnlyUnconfirmed';
 import { VerificationPage } from './components/VerificationPage';
+import { MembersOnlyWarningPage } from './components/MembersOnlyWarningPage';
 
 function App() {
   return (
@@ -35,10 +36,21 @@ function App() {
           </Route>
           <Route element={<RequireAuth allowedRoles={[e_Roles.User]} />}>
             <Route path="/" element={<Home />} />
-            <Route path="booking" element={<GearShare />} />
+            <Route
+              path="unauthorized/members-only"
+              element={<MembersOnlyWarningPage />}
+            />
           </Route>
 
-          <Route element={<RequireAuth allowedRoles={[e_Roles.User]} />}>
+          <Route
+            element={
+              <RequireAuth
+                allowedRoles={[e_Roles.Member, e_Roles.Admin]}
+                redirectTo="/unauthorized/members-only"
+              />
+            }
+          >
+            <Route path="booking" element={<GearShare />} />
             <Route path="admin" element={<Admin />}>
               <Route element={<RequireAuth allowedRoles={[e_Roles.Admin]} />}>
                 <Route path="users" element={<Users />} />
