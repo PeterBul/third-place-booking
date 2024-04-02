@@ -1,12 +1,5 @@
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import {
-  Container,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
-} from '@chakra-ui/react';
+import { Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/react';
 import { useLayoutEffect } from 'react';
 import useAuth from '../hooks/useAuth';
 import { e_Roles } from '../enums';
@@ -29,15 +22,14 @@ const Admin = () => {
     : [];
 
   return (
-    <Container
-      maxW={{ base: 'md', md: '5xl' }}
-      mx="auto"
-      px={6}
-      pt={24}
-      fontSize="sm"
-    >
+    <>
       {paths.length > 0 ? (
-        <Tabs index={paths.indexOf(path)}>
+        <Tabs
+          index={paths.indexOf(path)}
+          display={'flex'}
+          flexDir={'column'}
+          h={'100%'}
+        >
           <TabList>
             {paths.map((p) => (
               <Tab as={Link} key={p} to={p}>
@@ -46,9 +38,9 @@ const Admin = () => {
             ))}
           </TabList>
 
-          <TabPanels>
+          <TabPanels flex={1}>
             {paths.map((p) => (
-              <TabPanel key={p}>
+              <TabPanel key={p} h={'100%'}>
                 <Outlet />
               </TabPanel>
             ))}
@@ -57,7 +49,7 @@ const Admin = () => {
       ) : (
         <Outlet />
       )}
-    </Container>
+    </>
   );
 };
 

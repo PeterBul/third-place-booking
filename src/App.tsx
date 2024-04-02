@@ -18,6 +18,7 @@ import ImagesAdmin from './components/ImagesAdmin';
 import { AllowOnlyUnconfirmed } from './components/AllowOnlyUnconfirmed';
 import { VerificationPage } from './components/VerificationPage';
 import { MembersOnlyWarningPage } from './components/MembersOnlyWarningPage';
+import { PageContent } from './components/PageContent';
 
 function App() {
   return (
@@ -50,6 +51,7 @@ function App() {
               />
             }
           >
+            <Route element={<PageContent />}>
             <Route path="booking" element={<GearShare />} />
             <Route path="admin" element={<Admin />}>
               <Route element={<RequireAuth allowedRoles={[e_Roles.Admin]} />}>
@@ -58,6 +60,7 @@ function App() {
                 <Route path="images" element={<ImagesAdmin />} />
               </Route>
               <Route path="bookings" element={<BookingsAdmin />} />
+              </Route>
             </Route>
           </Route>
 

@@ -1,3 +1,4 @@
+import { Heading } from '@chakra-ui/react';
 import './Home.css';
 
 const Home = () => {
@@ -5,7 +6,9 @@ const Home = () => {
     <>
       <section className="home-full-page text-light">
         <hgroup className="center">
-          <h1 className="text-7xl">Welcome home 🔥</h1>
+          <Heading as={'h1'} fontWeight={'normal'} fontSize={'7xl'}>
+            Welcome home 🔥
+          </Heading>
         </hgroup>
       </section>
     </>

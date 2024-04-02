@@ -84,7 +84,6 @@ const GearShare = () => {
         display="flex"
         flexDirection="column"
         justifyContent="center"
-        pt="100px"
       >
         <Box as="hgroup">
           <Text variant="fun">Welcome to</Text>
@@ -209,7 +208,7 @@ const GearShare = () => {
                   display={'grid'}
                   gridTemplateColumns={'repeat( auto-fit, minmax(250px, 1fr) )'}
                   mt="20px"
-                  gap="50px"
+                  gap="20px"
                 >
                   {items
                     ?.sort((a, b) => a.id - b.id)

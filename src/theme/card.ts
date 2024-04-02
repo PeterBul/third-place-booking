@@ -13,7 +13,7 @@ const baseStyle = definePartsStyle({
     // paddingBottom: '2px',
   },
   body: {
-    // paddingTop: '2px',
+    padding: '14px',
   },
   footer: {
     // paddingTop: '2px',
