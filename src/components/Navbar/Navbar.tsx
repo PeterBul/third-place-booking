@@ -3,16 +3,21 @@ import useAuth from '../../hooks/useAuth';
 import useLogout from '../../hooks/useLogout';
 import './Navbar.css';
 import { Link } from 'react-router-dom';
-import { Box, Button, IconButton } from '@chakra-ui/react';
+import { Button, IconButton } from '@chakra-ui/react';
 import { CloseIcon, HamburgerIcon } from '@chakra-ui/icons';
 import { useLayoutEffect, useState } from 'react';
 import { e_Roles } from '../../enums';
+import { Gravatar } from '../Gravatar';
+import { useQuery } from '@tanstack/react-query';
+import { getMe } from '../../api/users';
 
 const Navbar = () => {
   const { auth } = useAuth();
   const isLoggedIn = auth.accessToken;
   const handleLogout = useLogout();
   const [display, changeDisplay] = useState('none');
+
+  const { data: me } = useQuery({ queryKey: ['me'], queryFn: getMe });
 
   useLayoutEffect(() => {
     if (display === 'flex') {
@@ -41,13 +46,14 @@ const Navbar = () => {
       backdropFilter={'blur(5px)'}
       borderRadius={{ base: 0, md: '20px' }}
     >
-      <Flex className="nav-items nav-items-left">
+      <Flex alignItems={'center'}>
         <Button as={Link} variant={'ghost'} to="/">
           Third place
         </Button>
       </Flex>
-      <Box
-        className="nav-items nav-items-right"
+      <Flex
+        gap={1}
+        alignItems={'center'}
         display={{ base: 'none', md: 'flex' }}
       >
         {isLoggedIn ? (
@@ -69,13 +75,19 @@ const Navbar = () => {
             >
               Sign Out
             </Button>
+            <Gravatar
+              email={me?.email ?? ''}
+              size={'sm'}
+              borderWidth={1}
+              borderColor={'yellow.300'}
+            />
           </>
         ) : (
           <Button as={Link} to="/login" mx={1}>
             Login
           </Button>
         )}
-      </Box>
+      </Flex>
       {/* hamburger{/* Mobile */}
       <IconButton
         aria-label="Open Menu"
