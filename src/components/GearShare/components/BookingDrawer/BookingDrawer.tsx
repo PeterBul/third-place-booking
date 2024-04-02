@@ -100,15 +100,17 @@ export const BookingDrawer = (props: IProps) => {
             </Box>
             <Box>
               <Text>Booking comment:</Text>
-              <Box
-                bg="yellow.200"
-                color="gray.800"
-                p="2"
-                borderRadius={10}
-                mt={2}
-              >
-                <Text>{booking.comment}</Text>
-              </Box>
+              {booking.comment && (
+                <Box
+                  bg="yellow.200"
+                  color="gray.800"
+                  p="2"
+                  borderRadius={10}
+                  mt={2}
+                >
+                  <Text>{booking.comment}</Text>
+                </Box>
+              )}
             </Box>
             <Box>
               <Text>Items in booking:</Text>

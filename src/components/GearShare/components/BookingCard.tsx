@@ -40,7 +40,9 @@ export const BookingCard = (props: IProps) => {
             fromDate={props.booking.pickupDate}
             toDate={props.booking.returnDate}
           />
-          <Text textAlign="left">{props.booking.comment}</Text>
+          {props.booking.comment && (
+            <Text textAlign="left">{props.booking.comment}</Text>
+          )}
           <Button
             onClick={(e) => {
               e.stopPropagation();
