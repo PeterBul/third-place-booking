@@ -33,6 +33,7 @@ import { z } from 'zod';
 import { toFormikValidationSchema } from 'zod-formik-adapter';
 import { createBooking } from '../../api/bookings';
 import { Link as ReactRouterLink } from 'react-router-dom';
+import moment from 'moment';
 
 const Schema = z
   .object({
@@ -46,10 +47,12 @@ const Schema = z
   }, 'Return date must be after or the same as pickup date');
 
 const GearShare = () => {
+  const today = moment().startOf('day').toISOString();
   const { data: items, isLoading } = useQuery({
-    queryKey: ['items'],
-    queryFn: getItems,
+    queryKey: ['items', today],
+    queryFn: getItems({ from: today }),
   });
+
   const queryClient = useQueryClient();
 
   const [isInfoOpen, setIsInfoOpen] = useState(false);

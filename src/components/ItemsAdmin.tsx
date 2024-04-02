@@ -42,7 +42,7 @@ export const newId = 1000000000;
 const ItemsAdmin = () => {
   const { data: items } = useQuery({
     queryKey: ['items'],
-    queryFn: getItems,
+    queryFn: getItems({ from: undefined }),
   });
 
   const images = useQuery({

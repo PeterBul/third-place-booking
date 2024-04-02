@@ -1,6 +1,7 @@
 import { axiosPrivate } from './axios';
 import { IBooking } from './bookings';
 import { IImage } from './images';
+import { z } from 'zod';
 
 export interface IItem {
   id: number;
@@ -10,13 +11,27 @@ export interface IItem {
   bookings: IBooking[];
 }
 
-export const getItems = async () => {
-  return (
-    await axiosPrivate.get<IItem[]>('/api/items', {
-      withCredentials: true,
-    })
-  ).data;
-};
+const getItemsSchema = z.object({
+  from: z.string().datetime().optional(),
+});
+
+type GetItemsDto = z.infer<typeof getItemsSchema>;
+
+/**
+ * @param from ISO 8601 date string
+ * @returns items
+ */
+export const getItems =
+  (dto: GetItemsDto = {}) =>
+  async () => {
+    const parsedDto = getItemsSchema.parse(dto);
+    return (
+      await axiosPrivate.get<IItem[]>('/api/items', {
+        withCredentials: true,
+        params: parsedDto,
+      })
+    ).data;
+  };
 
 export const editItem = async (item: Partial<IItem> & { id: number }) => {
   return (
