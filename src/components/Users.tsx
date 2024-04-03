@@ -37,15 +37,12 @@ const Users = () => {
   const emailPadding = useBreakpointValue({ base: 0, md: 2 });
   const centerCheckmark = useBreakpointValue({ base: false, md: true });
 
+  const userMutation = useMutation({ mutationFn: editUser });
+
   const columns = [
     {
-      header: 'First Name',
-      accessorKey: 'firstName',
-      cell: EditableCell,
-    },
-    {
-      header: 'Last Name',
-      accessorKey: 'lastName',
+      header: 'Name',
+      accessorKey: 'name',
       cell: EditableCell,
     },
     {
@@ -90,7 +87,6 @@ const Users = () => {
   const { data: users } = useQuery({ queryKey: ['users'], queryFn: getUsers });
 
   const [globalFilter, setGlobalFilter] = useState('');
-  const userMutation = useMutation({ mutationFn: editUser });
   const table = useReactTable({
     data: users ?? [],
     columns,

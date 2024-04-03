@@ -31,9 +31,7 @@ export const BookingCard = (props: IProps) => {
           ) : (
             <Avatar size="sm" />
           )}
-          <Heading size="sm">
-            {props.booking.user?.firstName} {props.booking.user?.lastName}
-          </Heading>
+          <Heading size="sm">{props.booking.user?.name}</Heading>
         </Flex>
         <Stack divider={<StackDivider />} gap={4} mt={4}>
           <HorizontalDateLine

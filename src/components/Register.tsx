@@ -28,8 +28,7 @@ function Register() {
   const [isMemberThirdPlace, setMemberThirdPlace] = useState(false);
   const [isMemberBloom, setMemberBloom] = useState(false);
 
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  const [name, setName] = useState('');
 
   // const [user, setUser] = useState('');
   // const [userFocus, setUserFocus] = useState(false);
@@ -55,15 +54,10 @@ function Register() {
   const isValidPwd = PWD_REGEX.test(pwd);
   const isValidMatch = pwd === matchPwd;
   const isValidEmail = EMAIL_REGEX.test(email);
-  const isValidFirstName = firstName.length > 0;
-  const isValidLastName = lastName.length > 0;
+  const isValidName = name.length > 0;
 
   const isValidEntries =
-    isValidPwd &&
-    isValidMatch &&
-    isValidEmail &&
-    isValidFirstName &&
-    isValidLastName;
+    isValidPwd && isValidMatch && isValidEmail && isValidName;
 
   useEffect(() => {
     setErrMsg('');
@@ -81,8 +75,7 @@ function Register() {
         {
           email,
           password: pwd,
-          firstName,
-          lastName,
+          name,
           isMemberThirdPlace,
           isMemberBloom,
         },
@@ -162,31 +155,17 @@ function Register() {
                 </Checkbox>
               </div>
               <FormControl>
-                <FormLabel htmlFor="first_name">
-                  First Name:
-                  <span className={firstName ? 'valid' : 'hide'}>
+                <FormLabel htmlFor="name">
+                  Name:
+                  <span className={name ? 'valid' : 'hide'}>
                     <FontAwesomeIcon icon={faCheck} />
                   </span>
                 </FormLabel>
                 <Input
                   type="text"
-                  id="first_name"
+                  id="name"
                   required
-                  onChange={(e) => setFirstName(e.target.value)}
-                />
-              </FormControl>
-              <FormControl>
-                <FormLabel htmlFor="last_name">
-                  Last Name:
-                  <span className={lastName ? 'valid' : 'hide'}>
-                    <FontAwesomeIcon icon={faCheck} />
-                  </span>
-                </FormLabel>
-                <Input
-                  type="text"
-                  id="last_name"
-                  required
-                  onChange={(e) => setLastName(e.target.value)}
+                  onChange={(e) => setName(e.target.value)}
                 />
               </FormControl>
 

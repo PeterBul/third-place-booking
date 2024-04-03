@@ -84,10 +84,7 @@ export const BookingDrawer = (props: IProps) => {
             <Box>
               <Flex>
                 <Text flexBasis={labelBasis}>Name:</Text>
-                <Text>
-                  {props.booking.user?.firstName}{' '}
-                  {props.booking?.user?.lastName}
-                </Text>
+                <Text>{props.booking.user?.name}</Text>
               </Flex>
               <Flex>
                 <Text flexBasis={labelBasis}>Mail:</Text>

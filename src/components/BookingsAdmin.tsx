@@ -117,7 +117,7 @@ const BookingsAdmin = () => {
         .map((booking) => {
           const user = users?.find((user) => user.id === booking.userId);
           return {
-            borrowedBy: user?.firstName + ' ' + user?.lastName,
+            borrowedBy: user?.name,
             rentedFrom: moment(booking.pickupDate).format('MMM Do YYYY'),
             rentedTo: moment(booking.returnDate).format('MMM Do YYYY'),
             status: booking.isReturned
