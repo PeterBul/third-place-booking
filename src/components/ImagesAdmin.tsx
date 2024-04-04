@@ -185,7 +185,7 @@ const ImagesAdmin = () => {
   return (
     <Box>
       <Filters globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} />
-      <Show above="md">
+      <Show breakpoint="(min-width: 769px)">
         <Box overflowX={'auto'}>
           <Table w={table.getTotalSize()}>
             <Thead>

@@ -178,7 +178,7 @@ const BookingsAdmin = () => {
         toggleMeFilter={toggleMeFilter}
       />
 
-      <Show above="md">
+      <Show breakpoint="(min-width: 769px)">
         <Box overflowX={'auto'}>
           <Table w={table.getTotalSize()}>
             <Thead>

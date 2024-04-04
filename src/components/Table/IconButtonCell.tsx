@@ -13,7 +13,6 @@ export function IconButtonCell<T>(context: CellContext<T, TValue>) {
         variant="inline"
         {...meta}
         onClick={() => meta.onClick(+context.row.id, context.getValue())}
-        // onClick={meta.onClick.bind(null, +context.row.id, context.getValue())}
       />
     </Center>
   );

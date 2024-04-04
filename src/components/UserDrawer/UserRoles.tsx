@@ -28,11 +28,13 @@ export const UserRoles = (props: IProps) => {
       <FormLabel htmlFor="user-roles">Roles</FormLabel>
 
       <HStack id="user-roles" spacing={4}>
-        {roles?.map((role) => (
-          <Tag size={'md'} key={role.id} variant="solid" colorScheme="teal">
-            {role.name}
-          </Tag>
-        ))}
+        {roles
+          ?.sort((a, b) => a.name.localeCompare(b.name))
+          ?.map((role) => (
+            <Tag size={'md'} key={role.id} variant="solid" colorScheme="teal">
+              {role.name}
+            </Tag>
+          ))}
       </HStack>
     </FormControl>
   );
