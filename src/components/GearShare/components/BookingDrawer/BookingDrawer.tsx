@@ -19,6 +19,7 @@ import { IBooking, getBooking } from '../../../../api/bookings';
 import moment from 'moment';
 import { useQuery } from '@tanstack/react-query';
 import { FullPageCentered } from '../../../FullPageCentered';
+import { parsePhoneNumber } from 'libphonenumber-js/max';
 
 interface IProps {
   isOpen: boolean;
@@ -55,6 +56,7 @@ export const BookingDrawer = (props: IProps) => {
       </FullPageCentered>
     );
   }
+  const user = props.booking.user;
 
   return (
     <Drawer
@@ -92,7 +94,10 @@ export const BookingDrawer = (props: IProps) => {
               </Flex>
               <Flex>
                 <Text flexBasis={labelBasis}>Phone Number:</Text>
-                <Text>{props.booking.user?.phone}</Text>
+                <Text>
+                  {user?.phone &&
+                    parsePhoneNumber(user.phone).formatInternational()}
+                </Text>
               </Flex>
             </Box>
             <Box>
