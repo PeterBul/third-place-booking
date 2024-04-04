@@ -6,10 +6,15 @@ export interface IUser {
   updatedAt: Date;
   email: string;
   phone: string;
-  firstName: string;
-  lastName: string;
+  name: string;
   isMemberThirdPlace: boolean;
   isMemberBloom: boolean;
+  roles?: number[];
+}
+
+interface IRole {
+  id: number;
+  name: string;
 }
 
 export const getUsers = async () => {
@@ -32,4 +37,31 @@ export const getMe = async () => {
   return (
     await axiosPrivate.get<IUser>('/api/users/me', { withCredentials: true })
   ).data;
+};
+
+export const getUserRoles = async (userId: number) => {
+  return (
+    await axiosPrivate.get<IRole[]>(`/api/users/${userId}/roles`, {
+      withCredentials: true,
+    })
+  ).data;
+};
+
+export const addRolesToUser = async (props: {
+  userId: number;
+  roles: number[];
+}) => {
+  await axiosPrivate.post(`/api/users/${props.userId}/roles`, props.roles, {
+    withCredentials: true,
+  });
+};
+
+export const removeRolesFromUser = async (props: {
+  userId: number;
+  roles: number[];
+}) => {
+  await axiosPrivate.delete(`/api/users/${props.userId}/roles`, {
+    data: props.roles,
+    withCredentials: true,
+  });
 };

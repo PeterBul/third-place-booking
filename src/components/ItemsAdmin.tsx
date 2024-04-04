@@ -92,6 +92,7 @@ const ItemsAdmin = () => {
       cell: DeleteCell,
       size: 40,
       meta: {
+        isInline: true,
         deleteCell: {
           mutation: deleteItem,
           invalidateKey: 'items',
@@ -217,17 +218,17 @@ const ItemsAdmin = () => {
                       w={`${header.getSize()}px`}
                       key={header.id}
                       border={
-                        header.column.columnDef.header === 'Delete'
+                        header.column.columnDef.meta?.isInline
                           ? 'none'
                           : undefined
                       }
                       boxShadow={
-                        header.column.columnDef.header === 'Delete'
+                        header.column.columnDef.meta?.isInline
                           ? 'none'
                           : undefined
                       }
                     >
-                      {header.column.columnDef.header !== 'Delete' && (
+                      {!header.column.columnDef.meta?.isInline && (
                         <>
                           {flexRender(
                             header.column.columnDef.header,
@@ -263,12 +264,12 @@ const ItemsAdmin = () => {
                       w={`${cell.column.getSize()}px`}
                       key={cell.id}
                       border={
-                        cell.column.columnDef.header === 'Delete'
+                        cell.column.columnDef.meta?.isInline
                           ? 'none'
                           : undefined
                       }
                       boxShadow={
-                        cell.column.columnDef.header === 'Delete'
+                        cell.column.columnDef.meta?.isInline
                           ? 'none'
                           : undefined
                       }
