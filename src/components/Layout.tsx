@@ -1,10 +1,14 @@
 import { Outlet } from 'react-router-dom';
 import Navbar from './Navbar/Navbar';
+import { LoggedOutNavbar } from './Navbar/LoggedOutNavbar';
 
-const Layout = () => {
+interface IProps {
+  isProtected?: boolean;
+}
+const Layout = (props: IProps) => {
   return (
     <main className="App">
-      <Navbar />
+      {props.isProtected ? <Navbar /> : <LoggedOutNavbar />}
       <Outlet />
     </main>
   );

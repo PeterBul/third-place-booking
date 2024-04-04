@@ -1,10 +1,11 @@
-import { Center, Heading } from '@chakra-ui/react';
+import { Heading } from '@chakra-ui/react';
+import { FullPageCentered } from './FullPageCentered';
 
 const Missing = () => {
   return (
-    <Center minH={'100vh'} pt={'100px'}>
+    <FullPageCentered>
       <Heading as={'h1'}>404 - Not Found</Heading>
-    </Center>
+    </FullPageCentered>
   );
 };
 

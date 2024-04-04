@@ -25,47 +25,53 @@ function App() {
     <Routes>
       {/* Persistent login wraps all because we want the app bar to load logout button immediately */}
       <Route element={<PersistentLogin />}>
-        <Route path="/" element={<Layout />}>
+        <Route path="/">
           {/* public routes */}
-          <Route path="login" element={<Login />} />
-          <Route path="register" element={<Register />} />
-          <Route path="unauthorized" element={<Unauthorized />} />
-
-          {/* protected routes */}
-          <Route element={<AllowOnlyUnconfirmed />}>
-            <Route path="/verification" element={<VerificationPage />} />
-          </Route>
-          <Route element={<RequireAuth allowedRoles={[e_Roles.User]} />}>
-            <Route path="/" element={<Home />} />
-            <Route
-              path="unauthorized/members-only"
-              element={<MembersOnlyWarningPage />}
-            />
+          <Route element={<Layout />}>
+            <Route path="login" element={<Login />} />
+            <Route path="register" element={<Register />} />
+            <Route path="unauthorized" element={<Unauthorized />} />
           </Route>
 
-          <Route
-            element={
-              <RequireAuth
-                allowedRoles={[e_Roles.Member, e_Roles.Admin]}
-                redirectTo="/unauthorized/members-only"
+          <Route element={<Layout isProtected />}>
+            {/* protected routes */}
+            <Route element={<AllowOnlyUnconfirmed />}>
+              <Route path="/verification" element={<VerificationPage />} />
+            </Route>
+            <Route element={<RequireAuth allowedRoles={[e_Roles.User]} />}>
+              <Route path="/" element={<Home />} />
+              <Route
+                path="unauthorized/members-only"
+                element={<MembersOnlyWarningPage />}
               />
-            }
-          >
-            <Route element={<PageContent />}>
-            <Route path="booking" element={<GearShare />} />
-            <Route path="admin" element={<Admin />}>
-              <Route element={<RequireAuth allowedRoles={[e_Roles.Admin]} />}>
-                <Route path="users" element={<Users />} />
-                <Route path="items" element={<ItemsAdmin />} />
-                <Route path="images" element={<ImagesAdmin />} />
-              </Route>
-              <Route path="bookings" element={<BookingsAdmin />} />
+            </Route>
+
+            <Route
+              element={
+                <RequireAuth
+                  allowedRoles={[e_Roles.Member, e_Roles.Admin]}
+                  redirectTo="/unauthorized/members-only"
+                />
+              }
+            >
+              <Route element={<PageContent />}>
+                <Route path="booking" element={<GearShare />} />
+                <Route path="admin" element={<Admin />}>
+                  <Route
+                    element={<RequireAuth allowedRoles={[e_Roles.Admin]} />}
+                  >
+                    <Route path="users" element={<Users />} />
+                    <Route path="items" element={<ItemsAdmin />} />
+                    <Route path="images" element={<ImagesAdmin />} />
+                  </Route>
+                  <Route path="bookings" element={<BookingsAdmin />} />
+                </Route>
               </Route>
             </Route>
-          </Route>
 
-          {/* catch all */}
-          <Route path="*" element={<Missing />} />
+            {/* catch all */}
+            <Route path="*" element={<Missing />} />
+          </Route>
         </Route>
       </Route>
     </Routes>

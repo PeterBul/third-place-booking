@@ -2,7 +2,8 @@ import { Outlet } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 import { useEffect, useState } from 'react';
 import useRefreshToken from '../hooks/useRefreshToken';
-import { Center, Spinner } from '@chakra-ui/react';
+import { Spinner } from '@chakra-ui/react';
+import { FullPageCentered } from './FullPageCentered';
 
 const PersistentLogin = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -32,7 +33,7 @@ const PersistentLogin = () => {
   return (
     <>
       {isLoading ? (
-        <Center h="100vh">
+        <FullPageCentered>
           <Spinner
             thickness="4px"
             speed="0.65s"
@@ -40,7 +41,7 @@ const PersistentLogin = () => {
             color="blue.500"
             size="xl"
           />
-        </Center>
+        </FullPageCentered>
       ) : (
         <Outlet />
       )}

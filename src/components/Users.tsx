@@ -287,6 +287,7 @@ const Users = () => {
       </Show>
       {currentUser != null && (
         <UserDrawer
+          isLoading
           isOpen={currentUserId !== null}
           onClose={() => setCurrentUserId(null)}
           user={currentUser}

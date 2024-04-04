@@ -24,7 +24,6 @@ import {
   Stack,
   Text,
   Textarea,
-  Center,
 } from '@chakra-ui/react';
 import { Field, Formik, FormikProps } from 'formik';
 import { MdExpandLess, MdExpandMore } from 'react-icons/md';
@@ -34,6 +33,7 @@ import { toFormikValidationSchema } from 'zod-formik-adapter';
 import { createBooking } from '../../api/bookings';
 import { Link as ReactRouterLink } from 'react-router-dom';
 import moment from 'moment';
+import { FullPageCentered } from '../FullPageCentered';
 
 const Schema = z
   .object({
@@ -65,7 +65,7 @@ const GearShare = () => {
 
   if (isLoading) {
     return (
-      <Center h="100vh">
+      <FullPageCentered>
         <Spinner
           thickness="4px"
           speed="0.65s"
@@ -73,7 +73,7 @@ const GearShare = () => {
           color="blue.500"
           size="xl"
         />
-      </Center>
+      </FullPageCentered>
     );
   }
 
@@ -143,7 +143,7 @@ const GearShare = () => {
                 This is a form, so you need to check the boxes under every item
                 you wish to book. At the bottom of this page you find the rest
                 of the form where you need add your information and select dates
-                for pickup and deliver.
+                for pickup and return.
               </Text>
               <Text>
                 - Remember: Nothing happens other than filling out this form.

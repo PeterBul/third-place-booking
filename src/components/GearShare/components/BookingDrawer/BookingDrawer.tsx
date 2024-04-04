@@ -1,7 +1,6 @@
 import {
   Box,
   Button,
-  Center,
   Drawer,
   DrawerBody,
   DrawerCloseButton,
@@ -19,6 +18,7 @@ import {
 import { IBooking, getBooking } from '../../../../api/bookings';
 import moment from 'moment';
 import { useQuery } from '@tanstack/react-query';
+import { FullPageCentered } from '../../../FullPageCentered';
 
 interface IProps {
   isOpen: boolean;
@@ -44,7 +44,7 @@ export const BookingDrawer = (props: IProps) => {
 
   if (isLoading || !booking) {
     return (
-      <Center h="100vh">
+      <FullPageCentered>
         <Spinner
           thickness="4px"
           speed="0.65s"
@@ -52,7 +52,7 @@ export const BookingDrawer = (props: IProps) => {
           color="blue.500"
           size="xl"
         />
-      </Center>
+      </FullPageCentered>
     );
   }
 

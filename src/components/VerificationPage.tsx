@@ -1,6 +1,7 @@
-import { Button, Center, Heading, Text, VStack } from '@chakra-ui/react';
+import { Button, Heading, Text, VStack } from '@chakra-ui/react';
 import axios from '../api/axios';
 import { useCountdown } from '../hooks/useCountdown';
+import { FullPageCentered } from './FullPageCentered';
 
 export const VerificationPage = () => {
   const [countdown, setCountdown] = useCountdown(0);
@@ -11,7 +12,7 @@ export const VerificationPage = () => {
   };
 
   return (
-    <Center h={'100vh'}>
+    <FullPageCentered>
       <VStack>
         <Heading as="h1">Verification required</Heading>
         <Text>
@@ -30,6 +31,6 @@ export const VerificationPage = () => {
         </Button>
         {countdown > 0 && <Text>Disabled for {countdown} seconds</Text>}
       </VStack>
-    </Center>
+    </FullPageCentered>
   );
 };

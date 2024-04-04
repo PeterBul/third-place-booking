@@ -1,4 +1,4 @@
-import { Container } from '@chakra-ui/react';
+import { Box, Container } from '@chakra-ui/react';
 import { Outlet } from 'react-router-dom';
 
 export const PageContent = () => {
@@ -7,12 +7,14 @@ export const PageContent = () => {
       maxW={{ base: 'md', md: '6xl' }}
       mx="auto"
       px={{ base: 0, md: 6 }}
-      pt={24}
+      py={24}
       fontSize="sm"
       h={'100vh'}
       className="page-content"
     >
-      <Outlet />
+      <Box pb={8}>
+        <Outlet />
+      </Box>
     </Container>
   );
 };

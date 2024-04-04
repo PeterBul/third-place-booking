@@ -6,8 +6,10 @@ import { Link, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import './Login.css';
 import { Input } from '@chakra-ui/input';
 import { Button } from '@chakra-ui/button';
-import { Container, Stack } from '@chakra-ui/layout';
+import { Stack } from '@chakra-ui/layout';
 import { Checkbox } from '@chakra-ui/checkbox';
+import { Link as ChakraLink } from '@chakra-ui/react';
+import { FullPageCentered } from '../FullPageCentered';
 
 const LOGIN_URL = '/api/auth/signin';
 
@@ -92,13 +94,7 @@ function Login() {
   }
 
   return (
-    <Container
-      display={'flex'}
-      justifyContent={'center'}
-      alignItems={'center'}
-      pt={'100px'}
-      minH={'100vh'}
-    >
+    <FullPageCentered>
       <Stack
         width={'100%'}
         maxW={'420px'}
@@ -148,11 +144,13 @@ function Login() {
           Need an account?
           <br />
           <span className="line">
-            <Link to="/register">Sign Up</Link>
+            <ChakraLink as={Link} color="blue.100" to="/register">
+              Sign Up
+            </ChakraLink>
           </span>
         </p>
       </Stack>
-    </Container>
+    </FullPageCentered>
   );
 }
 
