@@ -9,6 +9,7 @@ import {
   FormLabel,
   Input,
   Skeleton,
+  SkeletonText,
   Stack,
 } from '@chakra-ui/react';
 import { IUser, editUser } from '../../api/users';
@@ -41,10 +42,22 @@ export const UserDrawerContent = ({ user, isLoading, onClose }: IProps) => {
 
   if (isLoading) {
     return (
-      <Stack spacing={4}>
-        <Skeleton height={4} />
-        <Skeleton height={4} />
-        <Skeleton height={4} />
+      <Stack p={8} spacing={4}>
+        <Skeleton
+          startColor="gray.500"
+          endColor="gray.600"
+          height="8"
+          mt={8}
+          w={64}
+        />
+        <SkeletonText
+          pt={4}
+          startColor="gray.500"
+          endColor="gray.600"
+          skeletonHeight="4"
+          spacing={4}
+          noOfLines={4}
+        />
       </Stack>
     );
   }
@@ -110,6 +123,7 @@ export const UserDrawerContent = ({ user, isLoading, onClose }: IProps) => {
                         await formik.setFieldValue('phone', v);
                         formik.setFieldTouched('phone', true);
                       }}
+                      placeholder="Enter your phone number"
                     />
                     <FormErrorMessage>{formik.errors.phone}</FormErrorMessage>
                   </FormControl>

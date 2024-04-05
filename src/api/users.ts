@@ -1,3 +1,4 @@
+import { IRole } from '../types/IRole';
 import { axiosPrivate } from './axios';
 
 export interface IUser {
@@ -10,11 +11,6 @@ export interface IUser {
   isMemberThirdPlace: boolean;
   isMemberBloom: boolean;
   roles?: number[];
-}
-
-interface IRole {
-  id: number;
-  name: string;
 }
 
 export const getUsers = async () => {
@@ -64,4 +60,12 @@ export const removeRolesFromUser = async (props: {
     data: props.roles,
     withCredentials: true,
   });
+};
+
+export const getMyRoles = async () => {
+  return (
+    await axiosPrivate.get<number[]>('/api/users/me/roles', {
+      withCredentials: true,
+    })
+  ).data;
 };

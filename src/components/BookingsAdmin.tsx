@@ -1,24 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { getMe, getUsers } from '../api/users';
+import { getMe, getMyRoles, getUsers } from '../api/users';
+import { Box, useBreakpointValue } from '@chakra-ui/react';
 import {
-  Box,
-  Card,
-  CardBody,
-  FormControl,
-  FormLabel,
-  Icon,
-  Show,
-  Table,
-  Tbody,
-  Th,
-  Thead,
-  Tr,
-  VStack,
-  useBreakpointValue,
-} from '@chakra-ui/react';
-import {
-  SortDirection,
-  flexRender,
+  type ColumnDef,
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
@@ -29,9 +13,12 @@ import { StaticCell } from './Table/StaticCell';
 import { CheckmarkCell } from './Table/CheckmarkCell';
 import { useMemo, useState } from 'react';
 import { Filters } from './Table/Filters';
-import { MdArrowDownward, MdArrowUpward, MdSwapVert } from 'react-icons/md';
-import { editBooking, getBookings } from '../api/bookings';
+import { MdDelete } from 'react-icons/md';
+import { deleteBooking, editBooking, getBookings } from '../api/bookings';
 import moment from 'moment';
+import { IconButtonCell } from './Table/IconButtonCell';
+import { Table } from './Table/Table';
+import { e_CellType, e_Roles } from '../enums';
 
 const BookingsAdmin = () => {
   // const [users, setUsers] = useState<IUser[]>([]);
@@ -41,11 +28,68 @@ const BookingsAdmin = () => {
     queryFn: getBookings,
   });
   const { data: me } = useQuery({ queryKey: ['me'], queryFn: getMe });
+  const { data: myRoles } = useQuery({
+    queryKey: ['myRoles'],
+    queryFn: getMyRoles,
+  });
   const queryClient = useQueryClient();
 
   const centerCheckmark = useBreakpointValue({ base: false, md: true });
 
-  const columns = [
+  const deleteBookingMutation = useMutation({
+    mutationFn: deleteBooking,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookings'] });
+    },
+  });
+
+  const [globalFilter, setGlobalFilter] = useState('');
+
+  const [isMeFilterActive, setIsMeFilterActive] = useState(false);
+
+  const toggleMeFilter = () => {
+    setIsMeFilterActive((v) => !v);
+  };
+
+  const editBookingMutation = useMutation({
+    mutationFn: editBooking,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookings'] });
+    },
+  });
+  const data = useMemo(() => {
+    return (
+      bookings
+        ?.sort((a, b) => (a.id ?? 0) - (b.id ?? 0))
+        .filter((booking) => {
+          if (isMeFilterActive) {
+            return booking.userId === me?.id;
+          }
+          return true;
+        })
+        .map((booking) => {
+          const user = users?.find((user) => user.id === booking.userId);
+          return {
+            borrowedBy: user?.name,
+            rentedFrom: moment(booking.pickupDate).format('MMM Do YYYY'),
+            rentedTo: moment(booking.returnDate).format('MMM Do YYYY'),
+            status: booking.isReturned
+              ? 'Returned'
+              : booking.isPickedUp
+              ? 'Picked Up'
+              : 'Not Picked Up',
+            isPickedUp: booking.isPickedUp,
+            isReturned: booking.isReturned,
+            userId: booking.userId,
+            id: booking.id,
+          };
+        }) ?? []
+    );
+  }, [bookings, isMeFilterActive, me?.id, users]);
+
+  type TData = (typeof data)[0];
+
+  const columns: (ColumnDef<TData, TValue> | ColumnDef<TData, boolean>)[] = [
     {
       header: 'Borrowed By',
       accessorKey: 'borrowedBy',
@@ -89,50 +133,26 @@ const BookingsAdmin = () => {
       },
     },
   ];
-  const [globalFilter, setGlobalFilter] = useState('');
 
-  const [isMeFilterActive, setIsMeFilterActive] = useState(false);
-
-  const toggleMeFilter = () => {
-    setIsMeFilterActive((v) => !v);
-  };
-
-  const bookingMutation = useMutation({
-    mutationFn: editBooking,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['bookings'] });
-    },
-  });
-
-  const data = useMemo(() => {
-    return (
-      bookings
-        ?.sort((a, b) => (a.id ?? 0) - (b.id ?? 0))
-        .filter((booking) => {
-          if (isMeFilterActive) {
-            return booking.userId === me?.id;
-          }
-          return true;
-        })
-        .map((booking) => {
-          const user = users?.find((user) => user.id === booking.userId);
-          return {
-            borrowedBy: user?.name,
-            rentedFrom: moment(booking.pickupDate).format('MMM Do YYYY'),
-            rentedTo: moment(booking.returnDate).format('MMM Do YYYY'),
-            status: booking.isReturned
-              ? 'Returned'
-              : booking.isPickedUp
-              ? 'Picked Up'
-              : 'Not Picked Up',
-            isPickedUp: booking.isPickedUp,
-            isReturned: booking.isReturned,
-            userId: booking.userId,
-            id: booking.id,
-          };
-        }) ?? []
-    );
-  }, [bookings, isMeFilterActive, me?.id, users]);
+  if (myRoles?.includes(e_Roles.Admin)) {
+    columns.push({
+      header: 'Delete',
+      accessorKey: 'id',
+      cell: IconButtonCell,
+      size: 40,
+      meta: {
+        type: e_CellType.iconButton,
+        isInline: true,
+        iconButtonCell: {
+          as: MdDelete,
+          color: 'red.400',
+          'aria-label': 'Delete booking',
+          onClick: (id: number) => deleteBookingMutation.mutate(+id),
+          size: 'xs',
+        },
+      },
+    });
+  }
 
   const table = useReactTable({
     data,
@@ -161,7 +181,7 @@ const BookingsAdmin = () => {
       ) => {
         const booking = bookings?.find((booking) => booking.id === +rowId);
         if (!booking) return;
-        bookingMutation.mutate({
+        editBookingMutation.mutate({
           id: booking.id,
           [columnId]: value,
         });
@@ -171,117 +191,19 @@ const BookingsAdmin = () => {
 
   return (
     <Box>
-      <Filters
-        globalFilter={globalFilter}
-        setGlobalFilter={setGlobalFilter}
-        isMeFilterActive={isMeFilterActive}
-        toggleMeFilter={toggleMeFilter}
+      <Table
+        table={table}
+        filters={
+          <Filters
+            globalFilter={globalFilter}
+            setGlobalFilter={setGlobalFilter}
+            isMeFilterActive={isMeFilterActive}
+            toggleMeFilter={toggleMeFilter}
+          />
+        }
       />
-
-      <Show breakpoint="(min-width: 769px)">
-        <Box overflowX={'auto'}>
-          <Table w={table.getTotalSize()}>
-            <Thead>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <Tr className="tr" key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <Th
-                      className="th"
-                      w={`${header.getSize()}px`}
-                      key={header.id}
-                      border={0}
-                    >
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                      {header.column.getCanSort() && (
-                        <Icon
-                          as={getSortIcon(header.column.getIsSorted())}
-                          mx={3}
-                          fontSize={14}
-                          onClick={header.column.getToggleSortingHandler()}
-                        />
-                      )}
-                      <Box
-                        onMouseDown={header.getResizeHandler()}
-                        onTouchStart={header.getResizeHandler()}
-                        className={`resizer ${
-                          header.column.getIsResizing() ? 'isResizing' : ''
-                        }`}
-                      ></Box>
-                    </Th>
-                  ))}
-                </Tr>
-              ))}
-            </Thead>
-            <Tbody>
-              {table.getRowModel().rows.map((row) => (
-                <Tr className="tr" key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <Box
-                      className="td"
-                      w={`${cell.column.getSize()}px`}
-                      key={cell.id}
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </Box>
-                  ))}
-                </Tr>
-              ))}
-            </Tbody>
-          </Table>
-        </Box>
-      </Show>
-
-      <Show below="md">
-        <VStack>
-          {table.getRowModel().rows.map((row) => (
-            <Card key={row.id} w={'100%'}>
-              <CardBody>
-                {row.getVisibleCells().map((cell) => (
-                  <FormControl
-                    display={'flex'}
-                    my={2}
-                    key={cell.id}
-                    alignItems={'center'}
-                  >
-                    <FormLabel htmlFor={cell.id} minW={'120px'}>
-                      {cell.column.columnDef.header?.toString()}
-                    </FormLabel>
-                    <Box
-                      key={cell.id}
-                      id={cell.id}
-                      flex={1}
-                      overflow={'hidden'}
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </Box>
-                  </FormControl>
-                ))}
-              </CardBody>
-            </Card>
-          ))}
-        </VStack>
-      </Show>
     </Box>
   );
 };
 
 export default BookingsAdmin;
-
-const getSortIcon = (dir: SortDirection | false) => {
-  if (dir === 'asc') {
-    return MdArrowUpward;
-  }
-  if (dir === 'desc') {
-    return MdArrowDownward;
-  }
-  return MdSwapVert;
-};

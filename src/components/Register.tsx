@@ -15,10 +15,12 @@ import { Checkbox } from '@chakra-ui/checkbox';
 import { FormControl, FormLabel } from '@chakra-ui/form-control';
 import { Input } from '@chakra-ui/input';
 import { Button } from '@chakra-ui/button';
-import { Link as ChakraLink } from '@chakra-ui/react';
+import { Link as ChakraLink, FormErrorMessage } from '@chakra-ui/react';
 import { Field, Form, Formik } from 'formik';
 import * as yup from 'yup';
 import { FullPageCentered } from './FullPageCentered';
+import { yupPhone } from '../schema';
+import { PhoneNumberInput } from './PhoneNumberInput';
 
 // const USER_REGEX = /^[a-zA-Z][a-zA-Z0-9-_]{3,23}$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%]).{8,42}$/;
@@ -27,6 +29,7 @@ const REGISTER_URL = '/api/auth/signup';
 const Schema = yup.object().shape({
   name: yup.string().required('Name is required'),
   email: yup.string().email('Invalid email').required('Email is required'),
+  phone: yupPhone.required('Phone number is required'),
   pwd: yup
     .string()
     .matches(
@@ -57,18 +60,21 @@ function Register() {
 
   const handleSubmit = async (values: {
     email: string;
+    phone: string;
     pwd: string;
     matchPwd: string;
     name: string;
     isMemberThirdPlace: boolean;
     isMemberBloom: boolean;
   }) => {
-    const { email, pwd, name, isMemberBloom, isMemberThirdPlace } = values;
+    const { email, phone, pwd, name, isMemberBloom, isMemberThirdPlace } =
+      values;
     try {
       const response = await axios.post(
         REGISTER_URL,
         {
           email,
+          phone,
           password: pwd,
           name,
           isMemberThirdPlace,
@@ -109,6 +115,7 @@ function Register() {
         initialValues={{
           name: '',
           email: '',
+          phone: '',
           pwd: '',
           matchPwd: '',
           isMemberBloom: false,
@@ -123,6 +130,7 @@ function Register() {
           const isValidPwd = !formik.errors.pwd && formik.values.pwd;
           const isValidMatch =
             !formik.errors.matchPwd && formik.values.matchPwd;
+          const isValidPhone = !formik.errors.phone && formik.values.phone;
           return (
             <>
               <Stack
@@ -178,7 +186,9 @@ function Register() {
                         I'm a member of Bloom
                       </Checkbox>
                     </div>
-                    <FormControl>
+                    <FormControl
+                      isInvalid={!!formik.errors.name && formik.touched.name}
+                    >
                       <FormLabel htmlFor="name">
                         Name:
                         <span className={isValidName ? 'valid' : 'hide'}>
@@ -192,10 +202,12 @@ function Register() {
                         name="name"
                         required
                       />
+                      <FormErrorMessage>{formik.errors.name}</FormErrorMessage>
                     </FormControl>
 
-                    {/* TODO: Change to email */}
-                    <FormControl>
+                    <FormControl
+                      isInvalid={!!formik.errors.email && formik.touched.email}
+                    >
                       <FormLabel htmlFor="email">
                         Email:
                         <span className={isValidEmail ? 'valid' : 'hide'}>
@@ -220,6 +232,39 @@ function Register() {
                         required
                         aria-invalid={isValidEmail ? 'false' : 'true'}
                       />
+                      <FormErrorMessage>{formik.errors.email}</FormErrorMessage>
+                    </FormControl>
+                    <FormControl
+                      isInvalid={!!formik.errors.phone && formik.touched.phone}
+                    >
+                      <FormLabel htmlFor="phone">
+                        Phone:
+                        <span className={isValidPhone ? 'valid' : 'hide'}>
+                          <FontAwesomeIcon icon={faCheck} />
+                        </span>
+                        <span
+                          className={
+                            isValidPhone || !formik.values.phone
+                              ? 'hide'
+                              : 'invalid'
+                          }
+                        >
+                          <FontAwesomeIcon icon={faTimes} />
+                        </span>
+                      </FormLabel>
+                      <Field
+                        as={PhoneNumberInput}
+                        type="tel"
+                        id="phone"
+                        name="phone"
+                        required
+                        aria-invalid={isValidPhone ? 'false' : 'true'}
+                        onChange={(v: string) => {
+                          formik.setFieldValue('phone', v);
+                          formik.setFieldTouched('phone', true);
+                        }}
+                      />
+                      <FormErrorMessage>{formik.errors.phone}</FormErrorMessage>
                     </FormControl>
                     {/* Username */}
                     {/* <label htmlFor="username">
@@ -256,7 +301,9 @@ function Register() {
               <br />
               Letters, numbers, underscores, hyphens allowed.
             </p> */}
-                    <FormControl>
+                    <FormControl
+                      isInvalid={!!formik.errors.pwd && formik.touched.pwd}
+                    >
                       <FormLabel htmlFor="pwd">
                         Password:
                         <span className={isValidPwd ? 'valid' : 'hide'}>
@@ -283,6 +330,7 @@ function Register() {
                         onFocus={() => setPwdFocus(true)}
                         onBlur={() => setPwdFocus(false)}
                       />
+                      <FormErrorMessage>{formik.errors.pwd}</FormErrorMessage>
                       <Text
                         id="pwdnote"
                         className={
@@ -306,7 +354,11 @@ function Register() {
                         <span aria-label="percent sign">%</span>
                       </Text>
                     </FormControl>
-                    <FormControl>
+                    <FormControl
+                      isInvalid={
+                        !!formik.errors.matchPwd && formik.touched.matchPwd
+                      }
+                    >
                       <FormLabel htmlFor="confirm_pwd">
                         Confirm Password:
                         <span className={isValidMatch ? 'valid' : 'hide'}>
@@ -333,6 +385,9 @@ function Register() {
                         onFocus={() => setMatchFocus(true)}
                         onBlur={() => setMatchFocus(false)}
                       />
+                      <FormErrorMessage>
+                        {formik.errors.matchPwd}
+                      </FormErrorMessage>
                       <Text
                         id="confirmnote"
                         className={

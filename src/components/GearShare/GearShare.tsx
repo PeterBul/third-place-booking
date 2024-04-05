@@ -59,6 +59,7 @@ const GearShare = () => {
   const postBooking = useMutation({
     mutationFn: createBooking,
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookings'] });
       queryClient.invalidateQueries({ queryKey: ['items'] });
     },
   });

@@ -103,7 +103,7 @@ h5 {
 }
 
 
-button {
+/* button {
   border-radius: 8px;
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
@@ -112,7 +112,7 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
   color: #fff;
-}
+} */
 /* button:hover {
   border-color: #646cff;
 } */
@@ -152,13 +152,6 @@ body {
     background-color: var(--bg-dark);
 }
 
-.full-page-center {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh; 
-}
 
 
 section {
@@ -167,14 +160,6 @@ section {
 
 section.sm {
     max-width: var(--sm);
-    /* width: 100%;
-    max-width: 420px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    padding: 1rem;
-    background-color: #fbfbfb;
-    border-radius: 20px; */
 }
 
 section.md {
@@ -193,21 +178,7 @@ section.xxl {
     max-width: var(--2xl);
 }
 
-.top-section {
-    padding-top: 6rem;
-}
 
-.login-form, .register-form, .home-section, .center-card {
-    width: 100%;
-    max-width: 420px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    padding: 1rem;
-    color: var(--fg-light);
-    background-color: #fbfbfb;
-    border-radius: 20px;
-}
 
 form {
     display: flex;

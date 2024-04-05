@@ -9,16 +9,24 @@ import {
 } from '@chakra-ui/react';
 import Countries from '../data/countries.json';
 import parsePhoneNumberFromString, { AsYouType } from 'libphonenumber-js/max';
-import { useState, useEffect, useRef, ChangeEvent } from 'react';
+import { useState, useRef, ChangeEvent } from 'react';
 import { Country, SearchOnList } from './SearchOnList';
 import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
 
 interface IProps {
   value: string;
   onChange: (arg: string) => void;
+  placeholder?: string;
 }
 
-export const PhoneNumberInput = ({ value, onChange }: IProps) => {
+const defaultCountry = {
+  name: 'Norway',
+  flag: '🇳🇴',
+  code: 'NO',
+  dial_code: '+47',
+};
+
+export const PhoneNumberInput = ({ value, onChange, placeholder }: IProps) => {
   const ref = useRef(null);
   const initialValue = parsePhoneNumberFromString(value ?? '', {
     // set this to use a default country when the phone number omits country code
@@ -32,18 +40,16 @@ export const PhoneNumberInput = ({ value, onChange }: IProps) => {
   const [number, setNumber] = useState(
     initialValue ? initialValue.nationalNumber : ''
   );
-  const [country, setCountry] = useState(
-    initialValue ? `+${initialValue.countryCallingCode}` : '+47'
-  );
-  const [countryFlag, setCountryFlag] = useState(() => {
-    if (initialValue) {
-      const country = Countries.find(
-        (item) => item.dial_code === `+${initialValue.countryCallingCode}`
-      );
-      return country?.flag || `🇳🇴`;
+  const [country, setCountry] = useState<Country>(() => {
+    if (!initialValue) {
+      return defaultCountry;
     }
-    return `🇳🇴`;
+    return (
+      Countries.find((item) => item.code === initialValue?.country) ||
+      defaultCountry
+    );
   });
+
   const { isOpen, onToggle, onClose } = useDisclosure();
 
   useOutsideClick({
@@ -51,25 +57,20 @@ export const PhoneNumberInput = ({ value, onChange }: IProps) => {
     handler: () => onClose(),
   });
 
-  useEffect(() => {
-    if (country !== '' || number !== '') {
-      onChange(`${country}${number}`);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [country, number]);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const onCountryChange = (item: Country) => {
-    const parsedNumber = new AsYouType().input(`${country}${number}`);
+    const parsedNumber = new AsYouType().input(`${item.dial_code}${number}`);
 
-    setCountry(item?.dial_code);
-    setCountryFlag(item?.flag);
+    setCountry(item);
     onChange(parsedNumber);
+    inputRef.current?.focus();
     onClose();
   };
 
   const onPhoneNumberChange = (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
-    const parsedNumber = new AsYouType().input(`${country}${number}`);
+    const parsedNumber = new AsYouType().input(`${country.dial_code}${value}`);
 
     setNumber(value);
     onChange(parsedNumber);
@@ -80,7 +81,7 @@ export const PhoneNumberInput = ({ value, onChange }: IProps) => {
       <InputGroup>
         <InputLeftElement width="5em" cursor="pointer" onClick={onToggle}>
           <Text as="span" mr={3}>
-            {countryFlag}
+            {country.flag}
           </Text>
           {isOpen ? (
             <ChevronUpIcon boxSize={6} color="gray.500" />
@@ -89,16 +90,21 @@ export const PhoneNumberInput = ({ value, onChange }: IProps) => {
           )}
         </InputLeftElement>
         <Input
+          ref={inputRef}
           pl="5em"
           type="tel"
           value={number}
-          placeholder="Enter your phone number"
+          placeholder={placeholder}
           onChange={onPhoneNumberChange}
         />
       </InputGroup>
 
       {isOpen ? (
-        <SearchOnList data={Countries} onChange={onCountryChange} />
+        <SearchOnList
+          data={Countries}
+          onChange={onCountryChange}
+          initialCode={country.code}
+        />
       ) : null}
     </Box>
   );

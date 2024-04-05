@@ -54,3 +54,9 @@ export const editBooking = async (booking: Partial<IBooking>) => {
     }
   );
 };
+
+export const deleteBooking = async (id: number) => {
+  return await axiosPrivate.delete(`/api/bookings/${id}`, {
+    withCredentials: true,
+  });
+};
