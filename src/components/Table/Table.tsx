@@ -127,6 +127,7 @@ export const Table = <TData extends object>({
                     }
                     return (
                       <IconButton
+                        key={cell.id}
                         size={'md'}
                         w={'100%'}
                         {...meta}

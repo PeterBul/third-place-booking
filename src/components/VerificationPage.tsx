@@ -15,7 +15,7 @@ export const VerificationPage = () => {
     <FullPageCentered>
       <VStack>
         <Heading as="h1">Verification required</Heading>
-        <Text>
+        <Text textAlign={'center'}>
           Account verification required. Please check your email to find your
           unique verification link.
         </Text>

@@ -24,17 +24,11 @@ const variants = {
   selected: definePartsStyle({
     container: {
       outline: '2px solid var(--chakra-colors-blue-300)',
-      // _after: {
-      //   content: '"✓"',
-      //   position: 'absolute',
-      //   top: '-20px',
-      //   right: '20px',
-      //   borderRadius: '50%',
-      //   border: '2px solid var(--chakra-colors-blue-300)',
-      //   height: '40px',
-      //   width: '40px',
-      //   backgroundColor: 'var(--chakra-colors-blue-300)',
-      // },
+    },
+  }),
+  warning: definePartsStyle({
+    container: {
+      outline: '2px solid var(--chakra-colors-yellow-500)',
     },
   }),
 };

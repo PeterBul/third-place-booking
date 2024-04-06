@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { editUser, getUsers } from '../api/users';
 import { Box, useBreakpointValue } from '@chakra-ui/react';
 import {
@@ -24,7 +24,14 @@ const Users = () => {
   const emailPadding = useBreakpointValue({ base: 0, md: 2 });
   const centerCheckmark = useBreakpointValue({ base: false, md: true });
 
-  const userMutation = useMutation({ mutationFn: editUser });
+  const queryClient = useQueryClient();
+
+  const userMutation = useMutation({
+    mutationFn: editUser,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+    },
+  });
 
   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
 
@@ -149,6 +156,7 @@ const Users = () => {
           isOpen={currentUserId !== null}
           onClose={() => setCurrentUserId(null)}
           user={currentUser}
+          canEditRoles
         />
       )}
     </Box>

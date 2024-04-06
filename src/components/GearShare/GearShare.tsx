@@ -24,16 +24,19 @@ import {
   Stack,
   Text,
   Textarea,
+  useToast,
 } from '@chakra-ui/react';
-import { Field, Formik, FormikProps } from 'formik';
+import { FormikProps } from 'formik';
 import { MdExpandLess, MdExpandMore } from 'react-icons/md';
 import { useState } from 'react';
 import { z } from 'zod';
-import { toFormikValidationSchema } from 'zod-formik-adapter';
 import { createBooking } from '../../api/bookings';
 import { Link as ReactRouterLink } from 'react-router-dom';
 import moment from 'moment';
 import { FullPageCentered } from '../FullPageCentered';
+import { AxiosError } from 'axios';
+import { useFormik } from '../../validation';
+import { getOverlappingItems } from './getOverlappingBookings';
 
 const Schema = z
   .object({
@@ -54,6 +57,20 @@ const GearShare = () => {
   });
 
   const queryClient = useQueryClient();
+  const toast = useToast();
+
+  const formik = useFormik({
+    initialValues: {
+      pickupDate: '',
+      returnDate: '',
+      comment: '',
+      itemIds: [] as number[],
+    },
+    zodSchema: Schema,
+    onSubmit: (values) => {
+      postBooking.mutate(values);
+    },
+  });
 
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const postBooking = useMutation({
@@ -61,8 +78,51 @@ const GearShare = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bookings'] });
       queryClient.invalidateQueries({ queryKey: ['items'] });
+      formik.resetForm();
+    },
+    onError: (error) => {
+      toast({
+        title: 'An error occurred',
+        description: getMessage(error) || 'Unknown error',
+        status: 'error',
+        isClosable: true,
+      });
     },
   });
+
+  const handleSelectItem = async (id: number) => {
+    await formik.setFieldValue('itemIds', [
+      ...formik.values.itemIds.filter((v) => v !== id),
+      id,
+    ]);
+    formik.setFieldTouched('itemIds', true);
+  };
+
+  const handleUnselectItem = async (id: number) => {
+    await formik.setFieldValue(
+      'itemIds',
+      formik.values.itemIds.filter((v) => v !== id)
+    );
+    formik.setFieldTouched('itemIds', true);
+  };
+
+  const handleSelectionChange = (id: number, isChecked: boolean) => {
+    if (isChecked) {
+      handleSelectItem(id);
+    } else {
+      handleUnselectItem(id);
+    }
+  };
+  const zSafeParsed = Schema.safeParse(formik.values);
+
+  const returnError = getError(formik, zSafeParsed);
+
+  const pickupDateError =
+    formik.getFieldMeta('pickupDate').touched && formik.errors.pickupDate;
+
+  const itemsDict = items?.reduce((acc, item) => {
+    return { ...acc, [item.id]: item };
+  }, {} as Record<number, IItem>);
 
   if (isLoading) {
     return (
@@ -77,6 +137,13 @@ const GearShare = () => {
       </FullPageCentered>
     );
   }
+
+  const conflictingBookings = getOverlappingItems(
+    items,
+    formik.values.itemIds,
+    formik.values.pickupDate,
+    formik.values.returnDate
+  );
 
   return (
     <>
@@ -156,160 +223,122 @@ const GearShare = () => {
         </Alert>
       </Container>
       <Container maxW="8xl" mt="50px">
-        <Formik
-          initialValues={{
-            pickupDate: '',
-            returnDate: '',
-            comment: '',
-            itemIds: [] as number[],
-          }}
-          validationSchema={toFormikValidationSchema(Schema)}
-          onSubmit={(values, helpers) => {
-            postBooking.mutate(values);
-            helpers.resetForm();
-          }}
-        >
-          {(formik) => {
-            const handleSelectItem = (id: number) => {
-              formik.setFieldValue('itemIds', [
-                ...formik.values.itemIds.filter((v) => v !== id),
-                id,
-              ]);
-            };
+        <form onSubmit={formik.handleSubmit}>
+          <Box
+            display={'grid'}
+            gridTemplateColumns={'repeat( auto-fit, minmax(250px, 1fr) )'}
+            mt="20px"
+            gap="20px"
+          >
+            {items
+              ?.sort((a, b) => a.id - b.id)
+              .map((item) => (
+                <BookingItem
+                  key={item.id}
+                  item={item}
+                  isSelected={formik.values.itemIds.includes(item.id)}
+                  isAvailable={
+                    !conflictingBookings?.some((i) => i.id === item.id)
+                  }
+                  handleSelectionChange={handleSelectionChange}
+                />
+              ))}
+          </Box>
+          <Container mt="50px">
+            <Stack gap={4}>
+              <Heading as="h2" size="lg">
+                Booking summary
+              </Heading>
+              <FormControl
+                isInvalid={
+                  !!formik.errors.itemIds || !!conflictingBookings?.length
+                }
+              >
+                <Text>
+                  You have selected{' '}
+                  <strong>{formik.values.itemIds.length}</strong> items
+                </Text>
 
-            const handleUnselectItem = (id: number) => {
-              formik.setFieldValue(
-                'itemIds',
-                formik.values.itemIds.filter((v) => v !== id)
-              );
-            };
+                <FormErrorMessage>{formik.errors.itemIds}</FormErrorMessage>
+                {!!conflictingBookings?.length && (
+                  <FormErrorMessage>
+                    The selected items are not available for the selected dates
+                  </FormErrorMessage>
+                )}
+              </FormControl>
+              <List>
+                {formik.values.itemIds
+                  .sort((a, b) => {
+                    if (!itemsDict) {
+                      return 0;
+                    }
+                    return itemsDict[a].title.localeCompare(itemsDict[b].title);
+                  })
+                  .map((id) => (
+                    <ListItem key={id} display="flex">
+                      <Checkbox
+                        isChecked
+                        onChange={() => handleUnselectItem(id)}
+                        mr={4}
+                      >
+                        {items?.find((i) => i.id === id)?.title}
+                      </Checkbox>
+                    </ListItem>
+                  ))}
+              </List>
+              <Flex gap={4}>
+                <FormControl isRequired isInvalid={!!pickupDateError}>
+                  <FormLabel htmlFor="pickupDate">Pickup Date</FormLabel>
+                  <Input
+                    type="date"
+                    size="md"
+                    id="pickupDate"
+                    name="pickupDate"
+                    onChange={formik.handleChange}
+                    value={formik.values.pickupDate}
+                    onBlur={formik.handleBlur}
+                  />
 
-            const handleSelectionChange = (id: number, isChecked: boolean) => {
-              if (isChecked) {
-                handleSelectItem(id);
-              } else {
-                handleUnselectItem(id);
-              }
-            };
-            const zSafeParsed = Schema.safeParse(formik.values);
+                  <FormErrorMessage>{pickupDateError}</FormErrorMessage>
+                </FormControl>
+                <FormControl isRequired isInvalid={!!returnError}>
+                  <FormLabel htmlFor="returnDate">Return Date</FormLabel>
+                  <Input
+                    type="date"
+                    size="md"
+                    id="returnDate"
+                    name="returnDate"
+                    onChange={formik.handleChange}
+                    value={formik.values.returnDate}
+                    onBlur={formik.handleBlur}
+                  />
 
-            const returnError = getError(formik, zSafeParsed);
-
-            const pickupDateError =
-              formik.getFieldMeta('pickupDate').touched &&
-              formik.errors.pickupDate;
-
-            const itemsDict = items?.reduce((acc, item) => {
-              return { ...acc, [item.id]: item };
-            }, {} as Record<number, IItem>);
-
-            return (
-              <form onSubmit={formik.handleSubmit}>
-                <Box
-                  display={'grid'}
-                  gridTemplateColumns={'repeat( auto-fit, minmax(250px, 1fr) )'}
-                  mt="20px"
-                  gap="20px"
-                >
-                  {items
-                    ?.sort((a, b) => a.id - b.id)
-                    .map((item) => (
-                      <BookingItem
-                        key={item.id}
-                        item={item}
-                        isSelected={formik.values.itemIds.includes(item.id)}
-                        handleSelectionChange={handleSelectionChange}
-                      />
-                    ))}
-                </Box>
-                <Container mt="50px">
-                  <Stack gap={4}>
-                    <Heading as="h2" size="lg">
-                      Booking summary
-                    </Heading>
-                    <FormControl isInvalid={!!formik.errors.itemIds}>
-                      <Text>
-                        You have selected{' '}
-                        <strong>{formik.values.itemIds.length}</strong> items
-                      </Text>
-
-                      <FormErrorMessage>
-                        {formik.errors.itemIds}
-                      </FormErrorMessage>
-                    </FormControl>
-                    <List>
-                      {formik.values.itemIds
-                        .sort((a, b) => {
-                          if (!itemsDict) {
-                            return 0;
-                          }
-                          return itemsDict[a].title.localeCompare(
-                            itemsDict[b].title
-                          );
-                        })
-                        .map((id) => (
-                          <ListItem key={id} display="flex">
-                            <Checkbox
-                              isChecked
-                              onChange={() => handleUnselectItem(id)}
-                              mr={4}
-                            >
-                              {items?.find((i) => i.id === id)?.title}
-                            </Checkbox>
-                          </ListItem>
-                        ))}
-                    </List>
-                    <Flex gap={4}>
-                      <FormControl isRequired isInvalid={!!pickupDateError}>
-                        <FormLabel htmlFor="pickupDate">Pickup Date</FormLabel>
-                        <Field
-                          as={Input}
-                          type="date"
-                          size="md"
-                          id="pickupDate"
-                          onChange={formik.handleChange}
-                          value={formik.values.pickupDate}
-                        />
-
-                        <FormErrorMessage>{pickupDateError}</FormErrorMessage>
-                      </FormControl>
-                      <FormControl isRequired isInvalid={!!returnError}>
-                        <FormLabel htmlFor="returnDate">Return Date</FormLabel>
-                        <Field
-                          as={Input}
-                          type="date"
-                          size="md"
-                          id="returnDate"
-                          onChange={formik.handleChange}
-                          value={formik.values.returnDate}
-                        />
-
-                        <FormErrorMessage>{returnError}</FormErrorMessage>
-                      </FormControl>
-                    </Flex>
-                    <FormControl>
-                      <FormLabel htmlFor="comment">Comment</FormLabel>
-                      <Field
-                        as={Textarea}
-                        id="comment"
-                        onChange={formik.handleChange}
-                        value={formik.values.comment}
-                      />
-                    </FormControl>
-                    <Button
-                      type="submit"
-                      colorScheme="yellow"
-                      size="lg"
-                      isDisabled={!zSafeParsed.success}
-                    >
-                      Book
-                    </Button>
-                  </Stack>
-                </Container>
-              </form>
-            );
-          }}
-        </Formik>
+                  <FormErrorMessage>{returnError}</FormErrorMessage>
+                </FormControl>
+              </Flex>
+              <FormControl>
+                <FormLabel htmlFor="comment">Comment</FormLabel>
+                <Textarea
+                  id="comment"
+                  name="comment"
+                  onChange={formik.handleChange}
+                  value={formik.values.comment}
+                  onBlur={formik.handleBlur}
+                />
+              </FormControl>
+              <Button
+                type="submit"
+                colorScheme="yellow"
+                size="lg"
+                isDisabled={
+                  !zSafeParsed.success || !!conflictingBookings?.length
+                }
+              >
+                Book
+              </Button>
+            </Stack>
+          </Container>
+        </form>
       </Container>
     </>
   );
@@ -348,3 +377,11 @@ function getError(
     return zSafeParsed.error.errors.find((v) => v.code === 'custom')?.message;
   }
 }
+
+const getMessage = (error: Error) => {
+  if (error instanceof AxiosError) {
+    if (error.response?.data.message) {
+      return error.response?.data.message;
+    }
+  }
+};

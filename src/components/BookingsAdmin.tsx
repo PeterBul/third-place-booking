@@ -40,6 +40,7 @@ const BookingsAdmin = () => {
     mutationFn: deleteBooking,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bookings'] });
+      queryClient.invalidateQueries({ queryKey: ['items'] });
     },
   });
 

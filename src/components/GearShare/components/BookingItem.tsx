@@ -14,6 +14,7 @@ import { MdCheck } from 'react-icons/md';
 interface IProps {
   item: IItem;
   isSelected: boolean;
+  isAvailable: boolean;
   handleSelectionChange: (id: number, isChecked: boolean) => void;
 }
 
@@ -22,7 +23,7 @@ const checkMarkSize = 24;
 export const BookingItem = (props: IProps) => {
   return (
     <Card
-      variant={props.isSelected ? 'selected' : undefined}
+      variant={getCardVariant(props.isSelected, props.isAvailable)}
       onClick={() =>
         props.handleSelectionChange(props.item.id, !props.isSelected)
       }
@@ -40,8 +41,8 @@ export const BookingItem = (props: IProps) => {
         borderRadius="50%"
         width={`${checkMarkSize}px`}
         height={`${checkMarkSize}px`}
-        background={props.isSelected ? 'blue.300' : 'white'}
-        border="2px solid var(--chakra-colors-blue-300)"
+        background={getCheckMarkBackground(props.isSelected, props.isAvailable)}
+        border={getCheckMarkBorder(props.isAvailable)}
         display="flex"
         justifyContent="center"
         alignItems="center"
@@ -82,4 +83,34 @@ export const BookingItem = (props: IProps) => {
       </CardBody>
     </Card>
   );
+};
+
+const getCardVariant = (isSelected: boolean, isAvailable: boolean) => {
+  if (!isSelected) {
+    return undefined;
+  }
+  if (!isAvailable) {
+    return 'warning';
+  }
+
+  return 'selected';
+};
+
+const getCheckMarkBackground = (isSelected: boolean, isAvailable: boolean) => {
+  if (!isSelected) {
+    return 'white';
+  }
+  if (!isAvailable) {
+    return 'yellow.500';
+  }
+
+  return 'blue.300';
+};
+
+const getCheckMarkBorder = (isAvailable: boolean) => {
+  if (!isAvailable) {
+    return '2px solid var(--chakra-colors-yellow-500)';
+  }
+
+  return '2px solid var(--chakra-colors-blue-300)';
 };

@@ -9,7 +9,7 @@ import {
 } from '@chakra-ui/react';
 import Countries from '../data/countries.json';
 import parsePhoneNumberFromString, { AsYouType } from 'libphonenumber-js/max';
-import { useState, useRef, ChangeEvent } from 'react';
+import { useState, useRef, ChangeEvent, FocusEvent } from 'react';
 import { Country, SearchOnList } from './SearchOnList';
 import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
 
@@ -17,6 +17,7 @@ interface IProps {
   value: string;
   onChange: (arg: string) => void;
   placeholder?: string;
+  onBlur?: (e: FocusEvent) => void;
 }
 
 const defaultCountry = {
@@ -26,7 +27,12 @@ const defaultCountry = {
   dial_code: '+47',
 };
 
-export const PhoneNumberInput = ({ value, onChange, placeholder }: IProps) => {
+export const PhoneNumberInput = ({
+  value,
+  onBlur,
+  onChange,
+  placeholder,
+}: IProps) => {
   const ref = useRef(null);
   const initialValue = parsePhoneNumberFromString(value ?? '', {
     // set this to use a default country when the phone number omits country code
@@ -96,6 +102,7 @@ export const PhoneNumberInput = ({ value, onChange, placeholder }: IProps) => {
           value={number}
           placeholder={placeholder}
           onChange={onPhoneNumberChange}
+          onBlur={onBlur}
         />
       </InputGroup>
 
