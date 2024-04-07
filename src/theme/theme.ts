@@ -10,7 +10,7 @@ import { selectTheme } from './select.theme';
 
 const config: ThemeConfig = {
   initialColorMode: 'dark',
-  useSystemColorMode: true,
+  useSystemColorMode: false,
 };
 
 const theme = extendTheme({
