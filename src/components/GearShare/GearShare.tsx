@@ -38,7 +38,7 @@ import moment from 'moment';
 import { FullPageCentered } from '../FullPageCentered';
 import { AxiosError } from 'axios';
 import { useFormik } from '../../validation';
-import { getOverlappingItems } from './getOverlappingBookings';
+import { getAvailableItems } from './getAvailableItems';
 
 const Schema = z
   .object({
@@ -181,11 +181,16 @@ const GearShare = () => {
     );
   }
 
-  const conflictingBookings = getOverlappingItems(
-    items,
-    formik.values.itemIds,
-    formik.values.pickupDate,
-    formik.values.returnDate
+  const availableItemIds = new Set(
+    getAvailableItems(
+      items,
+      formik.values.pickupDate,
+      formik.values.returnDate
+    )?.map((item) => item.id)
+  );
+
+  const conflictingBookings = formik.values.itemIds.filter(
+    (id) => !availableItemIds.has(id)
   );
 
   return (
@@ -280,9 +285,7 @@ const GearShare = () => {
                   key={item.id}
                   item={item}
                   isSelected={formik.values.itemIds.includes(item.id)}
-                  isAvailable={
-                    !conflictingBookings?.some((i) => i.id === item.id)
-                  }
+                  isAvailable={availableItemIds.has(item.id)}
                   handleSelectionChange={handleSelectionChange}
                 />
               ))}
@@ -305,7 +308,8 @@ const GearShare = () => {
                 <FormErrorMessage>{formik.errors.itemIds}</FormErrorMessage>
                 {!!conflictingBookings?.length && (
                   <FormErrorMessage>
-                    The selected items are not available for the selected dates
+                    One or more of the selected items are not available for the
+                    chosen dates
                   </FormErrorMessage>
                 )}
               </FormControl>
@@ -324,7 +328,18 @@ const GearShare = () => {
                         onChange={() => handleUnselectItem(id)}
                         mr={4}
                       >
-                        {items?.find((i) => i.id === id)?.title}
+                        {items?.find((i) => i.id === id)?.title}{' '}
+                        {!availableItemIds.has(id) && (
+                          <Text
+                            as={'span'}
+                            ml={2}
+                            fontStyle={'italic'}
+                            color="gray.500"
+                            fontSize={'sm'}
+                          >
+                            Not available
+                          </Text>
+                        )}
                       </Checkbox>
                     </ListItem>
                   ))}

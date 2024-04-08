@@ -27,6 +27,10 @@ export const BookingItem = (props: IProps) => {
       onClick={() =>
         props.handleSelectionChange(props.item.id, !props.isSelected)
       }
+      aria-selected={props.isSelected}
+      aria-label={props.item.title}
+      aria-description={props.isAvailable ? 'Available' : 'Unavailable'}
+      title={props.isAvailable ? undefined : 'Unavailable'}
       cursor={'pointer'}
       bg="white"
       color="gray.800"

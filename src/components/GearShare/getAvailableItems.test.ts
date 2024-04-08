@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { doEventsOverlap } from './getOverlappingBookings';
+import { doEventsOverlap } from './getAvailableItems';
 import { describe, it, expect } from 'vitest';
 
 describe('doEventsOverlap', () => {
