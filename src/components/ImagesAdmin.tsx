@@ -78,9 +78,8 @@ const ImagesAdmin = () => {
         type: e_CellType.iconButton,
         isInline: true,
         iconButtonCell: {
-          icon: <DeleteIcon />,
+          icon: <DeleteIcon boxSize={4} />,
           color: 'red.400',
-          variant: 'ghost',
           'aria-label': 'Delete item',
           onClick: (id: number) => deleteImageMutation.mutate(+id),
         },

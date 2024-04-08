@@ -13,7 +13,8 @@ export function IconButtonCell<T>(context: CellContext<T, TValue>) {
     <Center flex={1}>
       <IconButton
         ref={getBtnRef ? getBtnRef(+context.row.id) : null}
-        variant="inline"
+        variant="ghost"
+        size="sm"
         {...rest}
         onClick={() => onClick(+context.row.id, context.getValue())}
       />

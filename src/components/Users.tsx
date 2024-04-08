@@ -87,7 +87,7 @@ const Users = () => {
         isInline: true,
         type: e_CellType.iconButton,
         iconButtonCell: {
-          icon: <EditIcon />,
+          icon: <EditIcon boxSize={4} />,
           onClick: (id: number) => setCurrentUserId(id),
           'aria-label': 'Edit',
           title: 'Edit',

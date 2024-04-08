@@ -1,21 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getMe, getMyRoles, getUsers } from '../api/users';
-import {
-  AlertDialogBody,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogOverlay,
-  Box,
-  Button,
-  Flex,
-  FormControl,
-  FormLabel,
-  Icon,
-  Text,
-  useBoolean,
-  useBreakpointValue,
-} from '@chakra-ui/react';
+import { Box, Icon, useBoolean, useBreakpointValue } from '@chakra-ui/react';
 import {
   type ColumnDef,
   getCoreRowModel,
@@ -40,15 +25,11 @@ import { Table } from './Table/Table';
 import { e_CellType, e_Roles } from '../enums';
 import { DeleteIcon } from '@chakra-ui/icons';
 import { MdArchive, MdInfo, MdRestore } from 'react-icons/md';
-import {
-  SeriousConfirmDestructButton,
-  SeriousConfirmDialog,
-  SeriousConfirmInput,
-} from './SeriousConfirmDialog';
 import { BooleanFilter } from './Table/BooleanFilter';
 import { BookingDrawer } from './GearShare/components/BookingDrawer/BookingDrawer';
 import { TagCell } from './Table/TagCell';
 import { getPickupLabel, getTagColor } from '../utils/getBookingStatus';
+import { SeriousDeleteDialog } from './SeriousDeleteDialog';
 
 const BookingsAdmin = () => {
   // const [users, setUsers] = useState<IUser[]>([]);
@@ -102,7 +83,6 @@ const BookingsAdmin = () => {
     },
   });
 
-  const cancelRef = useRef(null);
   const [bookingIdToDelete, setBookingIdToDelete] = useState<number | null>(
     null
   );
@@ -143,6 +123,8 @@ const BookingsAdmin = () => {
   type TData = (typeof data)[0];
 
   const openDrawerBtnRef = useRef<HTMLButtonElement>(null);
+
+  const boxSize = 4;
 
   const columns: (ColumnDef<TData, TValue> | ColumnDef<TData, boolean>)[] = [
     {
@@ -206,8 +188,7 @@ const BookingsAdmin = () => {
         type: e_CellType.iconButton,
         isInline: true,
         iconButtonCell: {
-          icon: <Icon as={MdInfo} />,
-          variant: 'ghost',
+          icon: <Icon as={MdInfo} boxSize={boxSize} />,
           'aria-label': 'Open booking',
           title: 'Open booking',
           onClick: (id: number) => {
@@ -227,13 +208,12 @@ const BookingsAdmin = () => {
         header: 'Archive',
         accessorKey: 'id',
         cell: IconButtonCell,
-        size: 50,
+        size: 40,
         meta: {
           type: e_CellType.iconButton,
           isInline: true,
           iconButtonCell: {
-            icon: <Icon as={MdArchive} />,
-            variant: 'ghost',
+            icon: <Icon as={MdArchive} boxSize={boxSize} />,
             'aria-label': 'Archive booking',
             title: 'Archive booking',
             onClick: (id: number) =>
@@ -246,13 +226,12 @@ const BookingsAdmin = () => {
         header: 'Restore',
         accessorKey: 'id',
         cell: IconButtonCell,
-        size: 50,
+        size: 40,
         meta: {
           type: e_CellType.iconButton,
           isInline: true,
           iconButtonCell: {
-            icon: <Icon as={MdRestore} />,
-            variant: 'ghost',
+            icon: <Icon as={MdRestore} boxSize={boxSize} />,
             'aria-label': 'Restore booking',
             title: 'Restore booking',
             onClick: (id: number) =>
@@ -270,9 +249,8 @@ const BookingsAdmin = () => {
         type: e_CellType.iconButton,
         isInline: true,
         iconButtonCell: {
-          icon: <DeleteIcon />,
+          icon: <DeleteIcon boxSize={boxSize} />,
           color: 'red.400',
-          variant: 'ghost',
           'aria-label': 'Delete booking',
           title: 'Delete booking',
           onClick: (id: number) => {
@@ -323,6 +301,15 @@ const BookingsAdmin = () => {
       ? bookings?.find((b) => b.id === selectedBookingId)
       : null;
 
+  const handleDelete = () => {
+    if (bookingIdToDelete === null) return;
+    deleteBookingMutation.mutate(bookingIdToDelete);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setBookingIdToDelete(null);
+  };
+
   return (
     <>
       <Box>
@@ -352,67 +339,13 @@ const BookingsAdmin = () => {
           }
         />
       </Box>
-      <SeriousConfirmDialog
-        confirmString="delete"
+      <SeriousDeleteDialog
         isOpen={bookingIdToDelete !== null}
-        leastDestructiveRef={cancelRef}
-        onClose={() => setBookingIdToDelete(null)}
-        isCentered
-      >
-        <AlertDialogOverlay>
-          <AlertDialogContent>
-            <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              Delete Booking
-            </AlertDialogHeader>
-
-            <AlertDialogBody>
-              <Flex flexDir={'column'} gap={4}>
-                <Text>
-                  Are you sure you want to delete this booking? This is a
-                  destructive action and can't be undone.
-                </Text>
-                <Text>
-                  You can also archive the booking by clicking{' '}
-                  <Box
-                    as="span"
-                    display={'inline-block'}
-                    verticalAlign={'middle'}
-                  >
-                    <Icon as={MdArchive} cursor={'text'} boxSize={5} />
-                  </Box>
-                  .
-                </Text>
-                <FormControl>
-                  <FormLabel htmlFor="delete-booking">
-                    Type "delete" to confirm
-                  </FormLabel>
-                  <SeriousConfirmInput id="delete-booking" />
-                </FormControl>
-              </Flex>
-            </AlertDialogBody>
-
-            <AlertDialogFooter>
-              <Button
-                ref={cancelRef}
-                onClick={() => setBookingIdToDelete(null)}
-              >
-                Cancel
-              </Button>
-              <SeriousConfirmDestructButton
-                colorScheme="red"
-                onClick={() => {
-                  if (bookingIdToDelete === null) return;
-                  deleteBookingMutation.mutate(bookingIdToDelete);
-                  setBookingIdToDelete(null);
-                }}
-                ml={3}
-              >
-                Delete
-              </SeriousConfirmDestructButton>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialogOverlay>
-      </SeriousConfirmDialog>
+        onClose={handleCloseDeleteDialog}
+        onDelete={handleDelete}
+        whatToDelete="booking"
+        canArchive
+      />
       {selectedBooking != null && (
         <BookingDrawer
           isOpen={selectedBooking !== null}

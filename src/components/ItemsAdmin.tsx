@@ -19,6 +19,7 @@ import { Table } from './Table/Table';
 import { IconButtonCell } from './Table/IconButtonCell';
 import { e_CellType } from '../enums';
 import { DeleteIcon } from '@chakra-ui/icons';
+import { SeriousDeleteDialog } from './SeriousDeleteDialog';
 
 export const newId = 1000000000;
 
@@ -41,6 +42,17 @@ const ItemsAdmin = () => {
       queryClient.invalidateQueries({ queryKey: ['items'] });
     },
   });
+
+  const [itemToDelete, setItemToDelete] = useState<number | null>(null);
+
+  const handleDelete = () => {
+    if (!itemToDelete) return;
+    deleteItemMutation.mutate(itemToDelete);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setItemToDelete(null);
+  };
 
   const columns = [
     {
@@ -85,11 +97,10 @@ const ItemsAdmin = () => {
         type: e_CellType.iconButton,
         isInline: true,
         iconButtonCell: {
-          icon: <DeleteIcon />,
+          icon: <DeleteIcon boxSize={4} />,
           color: 'red.400',
-          variant: 'ghost',
           'aria-label': 'Delete item',
-          onClick: (id: number) => deleteItemMutation.mutate(+id),
+          onClick: (id: number) => setItemToDelete(id),
         },
       },
     },
@@ -192,23 +203,31 @@ const ItemsAdmin = () => {
   });
 
   return (
-    <Box>
-      <Table
-        table={table}
-        filters={
-          <Filters
-            globalFilter={globalFilter}
-            setGlobalFilter={setGlobalFilter}
-          />
-        }
+    <>
+      <Box>
+        <Table
+          table={table}
+          filters={
+            <Filters
+              globalFilter={globalFilter}
+              setGlobalFilter={setGlobalFilter}
+            />
+          }
+        />
+        <NewItemButton
+          newItem={newItem}
+          onCancelAddingItem={cancelAddingItem}
+          onSave={saveNewItem}
+          onStartAddingItem={startAddingItem}
+        />
+      </Box>
+      <SeriousDeleteDialog
+        isOpen={itemToDelete !== null}
+        onClose={handleCloseDeleteDialog}
+        onDelete={handleDelete}
+        whatToDelete={'item'}
       />
-      <NewItemButton
-        newItem={newItem}
-        onCancelAddingItem={cancelAddingItem}
-        onSave={saveNewItem}
-        onStartAddingItem={startAddingItem}
-      />
-    </Box>
+    </>
   );
 };
 
