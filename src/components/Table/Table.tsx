@@ -36,12 +36,12 @@ export const Table = <TData extends object>({
         <Box overflowX={'auto'}>
           <ChakraTable w={table.getTotalSize()}>
             <Thead>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <Tr key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
+              {table.getHeaderGroups().map((headerGroup, i) => (
+                <Tr key={i}>
+                  {headerGroup.headers.map((header, j) => (
                     <Th
                       w={`${header.getSize()}px`}
-                      key={header.id}
+                      key={j}
                       border={
                         header.column.columnDef.meta?.isInline
                           ? 'none'
@@ -82,12 +82,12 @@ export const Table = <TData extends object>({
               ))}
             </Thead>
             <Tbody>
-              {table.getRowModel().rows.map((row) => (
-                <Tr key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
+              {table.getRowModel().rows.map((row, i) => (
+                <Tr key={i}>
+                  {row.getVisibleCells().map((cell, j) => (
                     <Td
                       w={`${cell.column.getSize()}px`}
-                      key={cell.id}
+                      key={j}
                       border={
                         cell.column.columnDef.meta?.isInline
                           ? 'none'
