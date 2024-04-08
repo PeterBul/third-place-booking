@@ -2,7 +2,7 @@ import { Flex } from '@chakra-ui/layout';
 import useAuth from '../../hooks/useAuth';
 import useLogout from '../../hooks/useLogout';
 import './Navbar.css';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Button, IconButton, useDisclosure } from '@chakra-ui/react';
 import { CloseIcon, HamburgerIcon } from '@chakra-ui/icons';
 import { useLayoutEffect, useState } from 'react';
@@ -17,6 +17,8 @@ const Navbar = () => {
   const isLoggedIn = auth.accessToken;
   const handleLogout = useLogout();
   const [display, changeDisplay] = useState('none');
+
+  const location = useLocation();
 
   const { data: me, isLoading } = useQuery({
     queryKey: ['me'],
@@ -36,6 +38,8 @@ const Navbar = () => {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  const isHome = location.pathname === '/';
+
   return (
     <>
       <Flex
@@ -43,15 +47,16 @@ const Navbar = () => {
         justifyContent={'space-between'}
         alignItems={'center'}
         mb={'1rem'}
+        m={display === 'flex' ? undefined : { base: '0.5rem', md: '1rem' }}
         p={'1rem'}
         pos={'fixed'}
         top={{ base: '0', md: '1rem' }}
         left={{ base: '0', md: '1rem' }}
         right={{ base: '0', md: '1rem' }}
         zIndex={100}
-        bgColor={'rgba(26, 32, 44, 0.60)'}
+        bgColor={isHome ? 'rgb(26, 32, 44)' : 'rgba(26, 32, 44, 0.60)'}
         backdropFilter={'blur(5px)'}
-        borderRadius={{ base: 0, md: '20px' }}
+        borderRadius={'20px'}
       >
         <Flex alignItems={'center'}>
           <Button as={Link} variant={'ghost'} to="/">
