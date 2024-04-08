@@ -1,18 +1,19 @@
-import { Center, Container } from '@chakra-ui/react';
+import { Center, Container, ContainerProps } from '@chakra-ui/react';
 
-interface IProps {
+interface IProps extends ContainerProps {
   children: React.ReactNode;
 }
 
-export const FullPageCentered = (props: IProps) => {
+export const FullPageCentered = ({ children, ...props }: IProps) => {
   return (
     <Container
       as={Center}
       minH={'calc(100vh - 100px)'}
       pt={'100px'}
       flexDir={'column'}
+      {...props}
     >
-      {props.children}
+      {children}
     </Container>
   );
 };
