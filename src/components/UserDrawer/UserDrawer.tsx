@@ -1,6 +1,5 @@
 import { Drawer, DrawerContent, DrawerOverlay } from '@chakra-ui/react';
 import { IUser, getUserRoles } from '../../api/users';
-import 'yup-phone';
 import { UserDrawerContent } from './UserDrawerContent';
 import { useQuery } from '@tanstack/react-query';
 
