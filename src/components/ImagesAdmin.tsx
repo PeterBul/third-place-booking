@@ -1,26 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Box, useBreakpointValue } from '@chakra-ui/react';
 import {
-  Box,
-  Button,
-  Card,
-  CardBody,
-  Flex,
-  FormControl,
-  FormLabel,
-  Icon,
-  Show,
-  Table,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
-  VStack,
-  useBreakpointValue,
-} from '@chakra-ui/react';
-import {
-  SortDirection,
-  flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
@@ -29,13 +9,15 @@ import {
 import { TValue } from './Table/types';
 import { useMemo, useState } from 'react';
 import { Filters } from './Table/Filters';
-import { MdArrowDownward, MdArrowUpward, MdSwapVert } from 'react-icons/md';
 import { EditableCell } from './Table/EditableCell';
 import { createImage, deleteImage, editImage, getImages } from '../api/images';
 import { CheckmarkCell } from './Table/CheckmarkCell';
 import { NewItemButton, newId } from './NewItemButton';
 import { useNewItem } from '../hooks/useNewItem';
-import { DeleteCell } from './Table/DeleteCell';
+import { Table } from './Table/Table';
+import { IconButtonCell } from './Table/IconButtonCell';
+import { e_CellType } from '../enums';
+import { DeleteIcon } from '@chakra-ui/icons';
 
 const ImagesAdmin = () => {
   // const [users, setUsers] = useState<IUser[]>([]);
@@ -47,6 +29,14 @@ const ImagesAdmin = () => {
 
   const isClippablePadding = useBreakpointValue({ base: 0, md: 2 });
   const centerCheckmark = useBreakpointValue({ base: false, md: true });
+
+  const queryClient = useQueryClient();
+  const deleteImageMutation = useMutation({
+    mutationFn: deleteImage,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['images'] });
+    },
+  });
 
   const columns = [
     {
@@ -82,19 +72,21 @@ const ImagesAdmin = () => {
       enableColumnFilter: false,
       enableResizing: false,
 
-      cell: DeleteCell,
+      cell: IconButtonCell,
       size: 40,
-
       meta: {
-        deleteCell: {
-          mutation: deleteImage,
-          invalidateKey: 'images',
+        type: e_CellType.iconButton,
+        isInline: true,
+        iconButtonCell: {
+          icon: <DeleteIcon />,
+          color: 'red.400',
+          variant: 'ghost',
+          'aria-label': 'Delete item',
+          onClick: (id: number) => deleteImageMutation.mutate(+id),
         },
       },
     },
   ];
-
-  const queryClient = useQueryClient();
 
   const [globalFilter, setGlobalFilter] = useState('');
 
@@ -175,141 +167,17 @@ const ImagesAdmin = () => {
     },
   });
 
-  const deleteMutation = useMutation({
-    mutationFn: deleteImage,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['images'] });
-    },
-  });
-
   return (
     <Box>
-      <Filters globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} />
-      <Show breakpoint="(min-width: 769px)">
-        <Box overflowX={'auto'}>
-          <Table w={table.getTotalSize()}>
-            <Thead>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <Tr key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <Th
-                      w={`${header.getSize()}px`}
-                      key={header.id}
-                      border={
-                        header.column.columnDef.header === 'Delete'
-                          ? 'none'
-                          : undefined
-                      }
-                      boxShadow={
-                        header.column.columnDef.header === 'Delete'
-                          ? 'none'
-                          : undefined
-                      }
-                    >
-                      {header.column.columnDef.header !== 'Delete' && (
-                        <>
-                          {flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                          {header.column.getCanSort() && (
-                            <Icon
-                              as={getSortIcon(header.column.getIsSorted())}
-                              mx={3}
-                              fontSize={14}
-                              onClick={header.column.getToggleSortingHandler()}
-                            />
-                          )}
-                          <Box
-                            onMouseDown={header.getResizeHandler()}
-                            onTouchStart={header.getResizeHandler()}
-                            className={`resizer ${
-                              header.column.getIsResizing() ? 'isResizing' : ''
-                            }`}
-                          ></Box>
-                        </>
-                      )}
-                    </Th>
-                  ))}
-                </Tr>
-              ))}
-            </Thead>
-            <Tbody>
-              {table.getRowModel().rows.map((row) => (
-                <Tr key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <Box
-                      as={Td}
-                      w={`${cell.column.getSize()}px`}
-                      key={cell.id}
-                      border={
-                        cell.column.columnDef.header === 'Delete'
-                          ? 'none'
-                          : undefined
-                      }
-                      boxShadow={
-                        cell.column.columnDef.header === 'Delete'
-                          ? 'none'
-                          : undefined
-                      }
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </Box>
-                  ))}
-                </Tr>
-              ))}
-            </Tbody>
-          </Table>
-        </Box>
-      </Show>
-
-      <Show below="md">
-        <VStack>
-          {table.getRowModel().rows.map((row) => (
-            <Card key={row.id} w={'100%'}>
-              <CardBody>
-                {row.getVisibleCells().map((cell) =>
-                  cell.column.columnDef.header?.toString() === 'Delete' ? (
-                    <Button
-                      variant={'deleteOutline'}
-                      w={'100%'}
-                      onClick={() => deleteMutation.mutate(+cell.row.id)}
-                      key={cell.id}
-                    >
-                      Delete
-                    </Button>
-                  ) : (
-                    <FormControl
-                      display={'flex'}
-                      my={2}
-                      key={cell.id}
-                      alignItems={'center'}
-                    >
-                      <FormLabel
-                        htmlFor={cell.id}
-                        minWidth={'80px'}
-                        alignItems={'center'}
-                      >
-                        {cell.column.columnDef.header?.toString()}
-                      </FormLabel>
-                      <Flex key={cell.id} id={cell.id} flex={1}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </Flex>
-                    </FormControl>
-                  )
-                )}
-              </CardBody>
-            </Card>
-          ))}
-        </VStack>
-      </Show>
-
+      <Table
+        table={table}
+        filters={
+          <Filters
+            globalFilter={globalFilter}
+            setGlobalFilter={setGlobalFilter}
+          />
+        }
+      />
       <NewItemButton
         newItem={newItem}
         onCancelAddingItem={cancelAddingItem}
@@ -321,13 +189,3 @@ const ImagesAdmin = () => {
 };
 
 export default ImagesAdmin;
-
-const getSortIcon = (dir: SortDirection | false) => {
-  if (dir === 'asc') {
-    return MdArrowUpward;
-  }
-  if (dir === 'desc') {
-    return MdArrowDownward;
-  }
-  return MdSwapVert;
-};
