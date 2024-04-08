@@ -43,6 +43,9 @@ declare module '@tanstack/table-core' {
     tagCell?: {
       getProps: (id: number) => TagProps;
     };
+    tagsCell?: {
+      getProps: (id: number) => TagProps;
+    };
 
     onChange?: (rowId: string, value: TValue | boolean) => void;
   }

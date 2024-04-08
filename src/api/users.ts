@@ -9,7 +9,7 @@ export interface IUser {
   phone: string;
   name: string;
   isMemberThirdPlace: boolean;
-  roles?: number[];
+  roles?: IRole[];
 }
 
 export const getUsers = async () => {

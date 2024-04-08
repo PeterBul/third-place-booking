@@ -19,6 +19,7 @@ import parsePhoneNumberFromString from 'libphonenumber-js/max';
 import { e_CellType } from '../enums';
 import { EditIcon } from '@chakra-ui/icons';
 import { Table } from './Table/Table';
+import { TagsCell } from './Table/TagsCell';
 
 const Users = () => {
   const emailPadding = useBreakpointValue({ base: 0, md: 2 });
@@ -69,6 +70,19 @@ const Users = () => {
       },
     },
     {
+      header: 'Roles',
+      accessorKey: 'roles',
+      cell: TagsCell,
+      meta: {
+        tagsCell: {
+          getProps: () => ({
+            colorScheme: 'blue',
+          }),
+        },
+      },
+      size: 210,
+    },
+    {
       header: 'Edit',
       accessorKey: 'id',
       cell: IconButtonCell,
@@ -93,6 +107,7 @@ const Users = () => {
     if (!users) return [];
     return users?.map((user) => ({
       ...user,
+      roles: user.roles?.map((role) => role.name).sort() || [],
       phone:
         user.phone &&
         parsePhoneNumberFromString(user.phone)?.formatInternational(),
