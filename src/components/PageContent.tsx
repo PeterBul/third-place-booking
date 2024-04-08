@@ -7,7 +7,7 @@ export const PageContent = () => {
       maxW={{ base: 'md', md: '6xl' }}
       mx="auto"
       px={{ base: 0, md: 6 }}
-      py={24}
+      py={28}
       fontSize="sm"
       h={'100vh'}
       className="page-content"
