@@ -25,6 +25,8 @@ import {
   Text,
   Textarea,
   useToast,
+  AlertDescription,
+  CloseButton,
 } from '@chakra-ui/react';
 import { FormikProps } from 'formik';
 import { MdExpandLess, MdExpandMore } from 'react-icons/md';
@@ -59,6 +61,8 @@ const GearShare = () => {
   const queryClient = useQueryClient();
   const toast = useToast();
 
+  const [showBookingConfirmation, setShowBookingConfirmation] = useState(false);
+
   const formik = useFormik({
     initialValues: {
       pickupDate: '',
@@ -78,6 +82,7 @@ const GearShare = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bookings'] });
       queryClient.invalidateQueries({ queryKey: ['items'] });
+      setShowBookingConfirmation(true);
       formik.resetForm();
     },
     onError: (error) => {
@@ -123,6 +128,44 @@ const GearShare = () => {
   const itemsDict = items?.reduce((acc, item) => {
     return { ...acc, [item.id]: item };
   }, {} as Record<number, IItem>);
+
+  if (showBookingConfirmation) {
+    return (
+      <FullPageCentered>
+        <Alert
+          status="success"
+          variant="subtle"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          textAlign="center"
+          minHeight="250px"
+        >
+          <CloseButton
+            alignSelf="flex-end"
+            position="relative"
+            right={0}
+            top={-1}
+            onClick={() => setShowBookingConfirmation(false)}
+          />
+          <AlertIcon boxSize="40px" mr={0} />
+          <AlertTitle mt={4} mb={1} fontSize="lg">
+            And its booked!
+          </AlertTitle>
+          <AlertDescription maxWidth="sm">
+            {
+              'Remember to reach out to any of us to make sure \
+              you can pick up and deliver on your selected dates ❤️'
+            }
+          </AlertDescription>
+          <AlertDescription maxWidth="sm" pt={2}>
+            And please remember to update the booking when you take stuff out
+            and when you return it 🙏
+          </AlertDescription>
+        </Alert>
+      </FullPageCentered>
+    );
+  }
 
   if (isLoading) {
     return (
