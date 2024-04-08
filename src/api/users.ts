@@ -37,7 +37,7 @@ export const getMe = async () => {
 
 export const getUserRoles = async (userId: number | undefined) => {
   if (!userId) {
-    return undefined;
+    return null;
   }
   return (
     await axiosPrivate.get<IRole[]>(`/api/users/${userId}/roles`, {
