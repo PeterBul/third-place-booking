@@ -11,6 +11,7 @@ export interface IBooking {
   isPickedUp: boolean;
   isReturned: boolean;
   user?: IUser;
+  userId?: number;
   isArchived?: boolean;
 }
 

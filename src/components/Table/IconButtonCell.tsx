@@ -7,12 +7,15 @@ export function IconButtonCell<T>(context: CellContext<T, TValue>) {
   if (!meta) {
     throw new Error('No meta provided for IconButtonCell');
   }
+
+  const { getBtnRef, onClick, ...rest } = meta;
   return (
     <Center flex={1}>
       <IconButton
+        ref={getBtnRef ? getBtnRef(+context.row.id) : null}
         variant="inline"
-        {...meta}
-        onClick={() => meta.onClick(+context.row.id, context.getValue())}
+        {...rest}
+        onClick={() => onClick(+context.row.id, context.getValue())}
       />
     </Center>
   );

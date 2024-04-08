@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Center,
   Drawer,
   DrawerBody,
   DrawerCloseButton,
@@ -18,8 +19,9 @@ import {
 import { IBooking, getBooking } from '../../../../api/bookings';
 import moment from 'moment';
 import { useQuery } from '@tanstack/react-query';
-import { FullPageCentered } from '../../../FullPageCentered';
 import { parsePhoneNumber } from 'libphonenumber-js/max';
+import { getUsers } from '../../../../api/users';
+import { BookingStatusTag } from './BookingStatusTag';
 
 interface IProps {
   isOpen: boolean;
@@ -35,28 +37,25 @@ export const BookingDrawer = (props: IProps) => {
     isError,
     isLoading,
   } = useQuery({
-    queryKey: [`booking-${props.booking.id}`],
+    queryKey: ['bookings', props.booking.id],
     queryFn: () => getBooking(props.booking.id!),
   });
 
-  if (isError) {
+  const {
+    data: users,
+    isError: userIsError,
+    isLoading: userIsLoading,
+  } = useQuery({
+    queryKey: ['users'],
+    queryFn: getUsers,
+  });
+
+  if (isError || userIsError) {
     return <Text>Something went wrong</Text>;
   }
 
-  if (isLoading || !booking) {
-    return (
-      <FullPageCentered>
-        <Spinner
-          thickness="4px"
-          speed="0.65s"
-          emptyColor="gray.200"
-          color="blue.500"
-          size="xl"
-        />
-      </FullPageCentered>
-    );
-  }
-  const user = props.booking.user;
+  const user =
+    props.booking.user || users?.find((u) => u.id === booking?.userId);
 
   return (
     <Drawer
@@ -72,64 +71,85 @@ export const BookingDrawer = (props: IProps) => {
         <DrawerHeader>Booking</DrawerHeader>
 
         <DrawerBody>
-          <Stack gap={12}>
-            <Box>
+          {isLoading || !booking || userIsLoading || !users ? (
+            <Center h={'100%'}>
+              <Spinner
+                thickness="4px"
+                speed="0.65s"
+                emptyColor="gray.200"
+                color="blue.500"
+                size="xl"
+              />
+            </Center>
+          ) : (
+            <Stack gap={12}>
+              <Box>
+                <Flex>
+                  <Text flexBasis={labelBasis}>Rented from:</Text>
+                  <Text>
+                    {moment(booking.pickupDate).format('MMM Do YYYY')}
+                  </Text>
+                </Flex>
+                <Flex>
+                  <Text flexBasis={labelBasis}>Rented to:</Text>
+                  <Text>
+                    {moment(booking.returnDate).format('MMM Do YYYY')}
+                  </Text>
+                </Flex>
+              </Box>
+
               <Flex>
-                <Text flexBasis={labelBasis}>Rented from:</Text>
-                <Text>{moment(booking.pickupDate).format('MMM Do YYYY')}</Text>
+                <Text flexBasis={labelBasis}>Status:</Text>
+                <BookingStatusTag booking={booking} />
               </Flex>
-              <Flex>
-                <Text flexBasis={labelBasis}>Rented to:</Text>
-                <Text>{moment(booking.returnDate).format('MMM Do YYYY')}</Text>
-              </Flex>
-            </Box>
-            <Box>
-              <Flex>
-                <Text flexBasis={labelBasis}>Name:</Text>
-                <Text>{props.booking.user?.name}</Text>
-              </Flex>
-              <Flex>
-                <Text flexBasis={labelBasis}>Mail:</Text>
-                <Text>{props.booking.user?.email}</Text>
-              </Flex>
-              <Flex>
-                <Text flexBasis={labelBasis}>Phone Number:</Text>
-                <Text>
-                  {user?.phone &&
-                    parsePhoneNumber(user.phone).formatInternational()}
-                </Text>
-              </Flex>
-            </Box>
-            <Box>
-              <Text>Booking comment:</Text>
-              {booking.comment && (
-                <Box
-                  bg="yellow.200"
-                  color="gray.800"
-                  p="2"
-                  borderRadius={10}
-                  mt={2}
-                >
-                  <Text>{booking.comment}</Text>
-                </Box>
-              )}
-            </Box>
-            <Box>
-              <Text>Items in booking:</Text>
-              <HStack spacing={4} pt={2}>
-                {booking.items?.map((item) => (
-                  <Tag
-                    size={'md'}
-                    key={item.id}
-                    variant="solid"
-                    colorScheme="teal"
+              <Box>
+                <Flex>
+                  <Text flexBasis={labelBasis}>Name:</Text>
+                  <Text>{user?.name}</Text>
+                </Flex>
+                <Flex>
+                  <Text flexBasis={labelBasis}>Mail:</Text>
+                  <Text>{user?.email}</Text>
+                </Flex>
+                <Flex>
+                  <Text flexBasis={labelBasis}>Phone Number:</Text>
+                  <Text>
+                    {user?.phone &&
+                      parsePhoneNumber(user.phone).formatInternational()}
+                  </Text>
+                </Flex>
+              </Box>
+              <Box>
+                <Text>Booking comment:</Text>
+                {booking.comment && (
+                  <Box
+                    bg="yellow.200"
+                    color="gray.800"
+                    p="2"
+                    borderRadius={10}
+                    mt={2}
                   >
-                    {item.title}
-                  </Tag>
-                ))}
-              </HStack>
-            </Box>
-          </Stack>
+                    <Text>{booking.comment}</Text>
+                  </Box>
+                )}
+              </Box>
+              <Box>
+                <Text>Items in booking:</Text>
+                <HStack spacing={4} pt={2}>
+                  {booking.items?.map((item) => (
+                    <Tag
+                      size={'md'}
+                      key={item.id}
+                      variant="solid"
+                      colorScheme="teal"
+                    >
+                      {item.title}
+                    </Tag>
+                  ))}
+                </HStack>
+              </Box>
+            </Stack>
+          )}
         </DrawerBody>
 
         <DrawerFooter>

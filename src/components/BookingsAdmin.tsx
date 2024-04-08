@@ -39,13 +39,16 @@ import { IconButtonCell } from './Table/IconButtonCell';
 import { Table } from './Table/Table';
 import { e_CellType, e_Roles } from '../enums';
 import { DeleteIcon } from '@chakra-ui/icons';
-import { MdArchive, MdRestore } from 'react-icons/md';
+import { MdArchive, MdInfo, MdRestore } from 'react-icons/md';
 import {
   SeriousConfirmDestructButton,
   SeriousConfirmDialog,
   SeriousConfirmInput,
 } from './SeriousConfirmDialog';
 import { BooleanFilter } from './Table/BooleanFilter';
+import { BookingDrawer } from './GearShare/components/BookingDrawer/BookingDrawer';
+import { TagCell } from './Table/TagCell';
+import { getPickupLabel, getTagColor } from '../utils/getBookingStatus';
 
 const BookingsAdmin = () => {
   // const [users, setUsers] = useState<IUser[]>([]);
@@ -76,6 +79,14 @@ const BookingsAdmin = () => {
   const [isMeFilterActive, setIsMeFilterActive] = useBoolean(false);
 
   const [isArchivedFilterActive, setIsArchivedFilterActive] = useBoolean(false);
+
+  const [selectedBookingId, setSelectedBookingId] = useState<number | null>(
+    null
+  );
+
+  const handleCloseDrawer = () => {
+    setSelectedBookingId(null);
+  };
 
   const { data: archivedBookings } = useQuery({
     queryKey: ['archivedBookings'],
@@ -112,11 +123,7 @@ const BookingsAdmin = () => {
             borrowedBy: user?.name,
             rentedFrom: moment(booking.pickupDate).format('MMM Do YYYY'),
             rentedTo: moment(booking.returnDate).format('MMM Do YYYY'),
-            status: booking.isReturned
-              ? 'Returned'
-              : booking.isPickedUp
-              ? 'Picked Up'
-              : 'Not Picked Up',
+            status: getPickupLabel(booking, 'basic'),
             isPickedUp: booking.isPickedUp,
             isReturned: booking.isReturned,
             userId: booking.userId,
@@ -134,6 +141,8 @@ const BookingsAdmin = () => {
   ]);
 
   type TData = (typeof data)[0];
+
+  const openDrawerBtnRef = useRef<HTMLButtonElement>(null);
 
   const columns: (ColumnDef<TData, TValue> | ColumnDef<TData, boolean>)[] = [
     {
@@ -154,7 +163,17 @@ const BookingsAdmin = () => {
     {
       header: 'Status',
       accessorKey: 'status',
-      cell: StaticCell,
+      cell: TagCell,
+      meta: {
+        tagCell: {
+          getProps: (id: number) => {
+            const booking = bookings?.find((b) => b.id === id);
+            return {
+              colorScheme: booking && getTagColor(booking),
+            };
+          },
+        },
+      },
     },
     {
       header: 'Is Picked Up',
@@ -175,6 +194,28 @@ const BookingsAdmin = () => {
         center: centerCheckmark,
         props: {
           px: 2,
+        },
+      },
+    },
+    {
+      header: 'Open Booking',
+      accessorKey: 'id',
+      cell: IconButtonCell,
+      size: 40,
+      meta: {
+        type: e_CellType.iconButton,
+        isInline: true,
+        iconButtonCell: {
+          icon: <Icon as={MdInfo} />,
+          variant: 'ghost',
+          'aria-label': 'Open booking',
+          title: 'Open booking',
+          onClick: (id: number) => {
+            setSelectedBookingId(id);
+          },
+          getBtnRef: (id: number) => {
+            return id === selectedBookingId ? openDrawerBtnRef : null;
+          },
         },
       },
     },
@@ -277,6 +318,11 @@ const BookingsAdmin = () => {
     },
   });
 
+  const selectedBooking =
+    selectedBookingId !== null
+      ? bookings?.find((b) => b.id === selectedBookingId)
+      : null;
+
   return (
     <>
       <Box>
@@ -367,6 +413,14 @@ const BookingsAdmin = () => {
           </AlertDialogContent>
         </AlertDialogOverlay>
       </SeriousConfirmDialog>
+      {selectedBooking != null && (
+        <BookingDrawer
+          isOpen={selectedBooking !== null}
+          onClose={handleCloseDrawer}
+          booking={selectedBooking}
+          btnRef={openDrawerBtnRef}
+        />
+      )}
     </>
   );
 };

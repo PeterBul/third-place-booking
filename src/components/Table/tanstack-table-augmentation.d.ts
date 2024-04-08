@@ -1,11 +1,17 @@
 import { TableMeta as OriginalTableMeta } from '@tanstack/table-core';
 import { ColumnMeta as OriginalColumnMeta } from '@tanstack/table-core';
 import { TValue } from './types';
-import { CheckboxProps, IconButtonProps, TextProps } from '@chakra-ui/react';
+import {
+  CheckboxProps,
+  IconButtonProps,
+  TagProps,
+  TextProps,
+} from '@chakra-ui/react';
 import { e_CellType } from '../../enums';
 
 interface IconButtonCellProps<TValue> extends IconButtonProps {
   onClick: (id: number, value: TValue) => void;
+  getBtnRef?: (id: number) => React.RefObject<HTMLButtonElement> | null;
 }
 
 declare module '@tanstack/table-core' {
@@ -34,6 +40,9 @@ declare module '@tanstack/table-core' {
       invalidateKey?: string;
     };
     iconButtonCell?: IconButtonCellProps<TValue>;
+    tagCell?: {
+      getProps: (id: number) => TagProps;
+    };
 
     onChange?: (rowId: string, value: TValue | boolean) => void;
   }
