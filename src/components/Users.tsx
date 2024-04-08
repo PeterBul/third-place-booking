@@ -60,17 +60,7 @@ const Users = () => {
       header: 'Member Third Place',
       accessorKey: 'isMemberThirdPlace',
       cell: CheckmarkCell,
-      meta: {
-        center: centerCheckmark,
-        props: {
-          px: 2,
-        },
-      },
-    },
-    {
-      header: 'Member Bloom',
-      accessorKey: 'isMemberBloom',
-      cell: CheckmarkCell,
+      size: 240,
       meta: {
         center: centerCheckmark,
         props: {

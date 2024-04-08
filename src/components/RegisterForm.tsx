@@ -38,7 +38,6 @@ const ZodSchema = z
         'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'
       ),
     matchPwd: z.string(),
-    isMemberBloom: z.boolean(),
     isMemberThirdPlace: z.boolean(),
   })
   .refine((schema) => schema.pwd === schema.matchPwd, {
@@ -65,10 +64,8 @@ export const RegisterForm = () => {
     matchPwd: string;
     name: string;
     isMemberThirdPlace: boolean;
-    isMemberBloom: boolean;
   }) => {
-    const { email, phone, pwd, name, isMemberBloom, isMemberThirdPlace } =
-      values;
+    const { email, phone, pwd, name, isMemberThirdPlace } = values;
     try {
       const response = await axios.post(
         REGISTER_URL,
@@ -78,7 +75,6 @@ export const RegisterForm = () => {
           password: pwd,
           name,
           isMemberThirdPlace,
-          isMemberBloom,
         },
         { withCredentials: true }
       );
@@ -109,7 +105,6 @@ export const RegisterForm = () => {
       phone: '',
       pwd: '',
       matchPwd: '',
-      isMemberBloom: false,
       isMemberThirdPlace: false,
     },
     onSubmit: handleSubmit,
@@ -175,17 +170,6 @@ export const RegisterForm = () => {
                 ref={memberThirdPlaceRef}
               >
                 I'm a member of Third Place
-              </Checkbox>
-            </div>
-            <div>
-              <Checkbox
-                isChecked={formik.values.isMemberBloom}
-                onChange={async (e) => {
-                  await formik.setFieldValue('isMemberBloom', e.target.checked);
-                  formik.setFieldTouched('isMemberBloom', true);
-                }}
-              >
-                I'm a member of Bloom
               </Checkbox>
             </div>
             <FormControl

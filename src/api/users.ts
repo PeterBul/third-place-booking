@@ -9,7 +9,6 @@ export interface IUser {
   phone: string;
   name: string;
   isMemberThirdPlace: boolean;
-  isMemberBloom: boolean;
   roles?: number[];
 }
 
