@@ -25,13 +25,15 @@ export const BookingCard = (props: IProps) => {
   return (
     <Card>
       <CardBody>
-        <Flex flex="1" gap="4" alignItems="center" flexWrap="wrap">
+        <Flex flex="1" gap="4" alignItems="center">
           {props.booking.user?.email ? (
             <Gravatar email={props.booking.user?.email} size="sm" />
           ) : (
             <Avatar size="sm" />
           )}
-          <Heading size="sm">{props.booking.user?.name}</Heading>
+          <Heading size="sm" textAlign={'left'}>
+            {props.booking.user?.name}
+          </Heading>
         </Flex>
         <Stack divider={<StackDivider />} gap={4} mt={4}>
           <HorizontalDateLine
