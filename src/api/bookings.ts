@@ -11,6 +11,7 @@ export interface IBooking {
   isPickedUp: boolean;
   isReturned: boolean;
   user?: IUser;
+  isArchived?: boolean;
 }
 
 interface IBookingWithItems extends IBooking {
@@ -26,6 +27,17 @@ export const getBookings = async () => {
     await axiosPrivate.get<IBookingWithUserId[]>('/api/bookings', {
       withCredentials: true,
     })
+  ).data;
+};
+
+export const getArchivedBookings = async () => {
+  return (
+    await axiosPrivate.get<IBookingWithUserId[]>(
+      '/api/bookings?isArchived=true',
+      {
+        withCredentials: true,
+      }
+    )
   ).data;
 };
 

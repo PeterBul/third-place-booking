@@ -1,6 +1,21 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getMe, getMyRoles, getUsers } from '../api/users';
-import { Box, useBreakpointValue } from '@chakra-ui/react';
+import {
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
+  Box,
+  Button,
+  Flex,
+  FormControl,
+  FormLabel,
+  Icon,
+  Text,
+  useBoolean,
+  useBreakpointValue,
+} from '@chakra-ui/react';
 import {
   type ColumnDef,
   getCoreRowModel,
@@ -11,14 +26,26 @@ import {
 import { TValue } from './Table/types';
 import { StaticCell } from './Table/StaticCell';
 import { CheckmarkCell } from './Table/CheckmarkCell';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { Filters } from './Table/Filters';
-import { MdDelete } from 'react-icons/md';
-import { deleteBooking, editBooking, getBookings } from '../api/bookings';
+import {
+  deleteBooking,
+  editBooking,
+  getArchivedBookings,
+  getBookings,
+} from '../api/bookings';
 import moment from 'moment';
 import { IconButtonCell } from './Table/IconButtonCell';
 import { Table } from './Table/Table';
 import { e_CellType, e_Roles } from '../enums';
+import { DeleteIcon } from '@chakra-ui/icons';
+import { MdArchive, MdRestore } from 'react-icons/md';
+import {
+  SeriousConfirmDestructButton,
+  SeriousConfirmDialog,
+  SeriousConfirmInput,
+} from './SeriousConfirmDialog';
+import { BooleanFilter } from './Table/BooleanFilter';
 
 const BookingsAdmin = () => {
   // const [users, setUsers] = useState<IUser[]>([]);
@@ -46,21 +73,32 @@ const BookingsAdmin = () => {
 
   const [globalFilter, setGlobalFilter] = useState('');
 
-  const [isMeFilterActive, setIsMeFilterActive] = useState(false);
+  const [isMeFilterActive, setIsMeFilterActive] = useBoolean(false);
 
-  const toggleMeFilter = () => {
-    setIsMeFilterActive((v) => !v);
-  };
+  const [isArchivedFilterActive, setIsArchivedFilterActive] = useBoolean(false);
+
+  const { data: archivedBookings } = useQuery({
+    queryKey: ['archivedBookings'],
+    queryFn: getArchivedBookings,
+  });
 
   const editBookingMutation = useMutation({
     mutationFn: editBooking,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bookings'] });
+      queryClient.invalidateQueries({ queryKey: ['archivedBookings'] });
+      queryClient.invalidateQueries({ queryKey: ['items'] });
     },
   });
+
+  const cancelRef = useRef(null);
+  const [bookingIdToDelete, setBookingIdToDelete] = useState<number | null>(
+    null
+  );
+
   const data = useMemo(() => {
     return (
-      bookings
+      (isArchivedFilterActive ? archivedBookings : bookings)
         ?.sort((a, b) => (a.id ?? 0) - (b.id ?? 0))
         .filter((booking) => {
           if (isMeFilterActive) {
@@ -86,7 +124,14 @@ const BookingsAdmin = () => {
           };
         }) ?? []
     );
-  }, [bookings, isMeFilterActive, me?.id, users]);
+  }, [
+    archivedBookings,
+    bookings,
+    isArchivedFilterActive,
+    isMeFilterActive,
+    me?.id,
+    users,
+  ]);
 
   type TData = (typeof data)[0];
 
@@ -136,6 +181,45 @@ const BookingsAdmin = () => {
   ];
 
   if (myRoles?.includes(e_Roles.Admin)) {
+    if (!isArchivedFilterActive) {
+      columns.push({
+        header: 'Archive',
+        accessorKey: 'id',
+        cell: IconButtonCell,
+        size: 50,
+        meta: {
+          type: e_CellType.iconButton,
+          isInline: true,
+          iconButtonCell: {
+            icon: <Icon as={MdArchive} />,
+            variant: 'ghost',
+            'aria-label': 'Archive booking',
+            title: 'Archive booking',
+            onClick: (id: number) =>
+              editBookingMutation.mutate({ id, isArchived: true }),
+          },
+        },
+      });
+    } else {
+      columns.push({
+        header: 'Restore',
+        accessorKey: 'id',
+        cell: IconButtonCell,
+        size: 50,
+        meta: {
+          type: e_CellType.iconButton,
+          isInline: true,
+          iconButtonCell: {
+            icon: <Icon as={MdRestore} />,
+            variant: 'ghost',
+            'aria-label': 'Restore booking',
+            title: 'Restore booking',
+            onClick: (id: number) =>
+              editBookingMutation.mutate({ id, isArchived: false }),
+          },
+        },
+      });
+    }
     columns.push({
       header: 'Delete',
       accessorKey: 'id',
@@ -145,11 +229,14 @@ const BookingsAdmin = () => {
         type: e_CellType.iconButton,
         isInline: true,
         iconButtonCell: {
-          as: MdDelete,
+          icon: <DeleteIcon />,
           color: 'red.400',
+          variant: 'ghost',
           'aria-label': 'Delete booking',
-          onClick: (id: number) => deleteBookingMutation.mutate(+id),
-          size: 'xs',
+          title: 'Delete booking',
+          onClick: (id: number) => {
+            setBookingIdToDelete(+id);
+          },
         },
       },
     });
@@ -191,19 +278,96 @@ const BookingsAdmin = () => {
   });
 
   return (
-    <Box>
-      <Table
-        table={table}
-        filters={
-          <Filters
-            globalFilter={globalFilter}
-            setGlobalFilter={setGlobalFilter}
-            isMeFilterActive={isMeFilterActive}
-            toggleMeFilter={toggleMeFilter}
-          />
-        }
-      />
-    </Box>
+    <>
+      <Box>
+        <Table
+          table={table}
+          filters={
+            <Filters
+              globalFilter={globalFilter}
+              setGlobalFilter={setGlobalFilter}
+              customFilters={
+                <>
+                  <BooleanFilter
+                    id="toggleMeBookings"
+                    label="Show only my bookings"
+                    value={isMeFilterActive}
+                    onToggle={setIsMeFilterActive.toggle}
+                  />
+                  <BooleanFilter
+                    id="toggleArchivedBookings"
+                    label="Show archived bookings"
+                    value={isArchivedFilterActive}
+                    onToggle={setIsArchivedFilterActive.toggle}
+                  />
+                </>
+              }
+            />
+          }
+        />
+      </Box>
+      <SeriousConfirmDialog
+        confirmString="delete"
+        isOpen={bookingIdToDelete !== null}
+        leastDestructiveRef={cancelRef}
+        onClose={() => setBookingIdToDelete(null)}
+        isCentered
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              Delete Booking
+            </AlertDialogHeader>
+
+            <AlertDialogBody>
+              <Flex flexDir={'column'} gap={4}>
+                <Text>
+                  Are you sure you want to delete this booking? This is a
+                  destructive action and can't be undone.
+                </Text>
+                <Text>
+                  You can also archive the booking by clicking{' '}
+                  <Box
+                    as="span"
+                    display={'inline-block'}
+                    verticalAlign={'middle'}
+                  >
+                    <Icon as={MdArchive} cursor={'text'} boxSize={5} />
+                  </Box>
+                  .
+                </Text>
+                <FormControl>
+                  <FormLabel htmlFor="delete-booking">
+                    Type "delete" to confirm
+                  </FormLabel>
+                  <SeriousConfirmInput id="delete-booking" />
+                </FormControl>
+              </Flex>
+            </AlertDialogBody>
+
+            <AlertDialogFooter>
+              <Button
+                ref={cancelRef}
+                onClick={() => setBookingIdToDelete(null)}
+              >
+                Cancel
+              </Button>
+              <SeriousConfirmDestructButton
+                colorScheme="red"
+                onClick={() => {
+                  if (bookingIdToDelete === null) return;
+                  deleteBookingMutation.mutate(bookingIdToDelete);
+                  setBookingIdToDelete(null);
+                }}
+                ml={3}
+              >
+                Delete
+              </SeriousConfirmDestructButton>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </SeriousConfirmDialog>
+    </>
   );
 };
 

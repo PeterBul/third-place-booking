@@ -1,12 +1,9 @@
 import {
   Flex,
-  FormControl,
-  FormLabel,
   Icon,
   Input,
   InputGroup,
   InputLeftElement,
-  Switch,
 } from '@chakra-ui/react';
 import { ColumnFiltersState } from '@tanstack/react-table';
 import { Dispatch, SetStateAction } from 'react';
@@ -18,12 +15,11 @@ interface IProps {
   globalFilter?: string;
   setGlobalFilter?: Dispatch<SetStateAction<string>>;
   placeholder?: string;
-  toggleMeFilter?: () => void;
-  isMeFilterActive?: boolean;
+  customFilters?: JSX.Element | JSX.Element[];
 }
 export const Filters = (props: IProps) => {
   return (
-    <Flex mb={6} gap={4} alignItems={'center'}>
+    <Flex mb={6} gap={4} alignItems={'center'} justifyContent={'flex-start'}>
       <InputGroup size="sm" maxW="12rem">
         <InputLeftElement pointerEvents="none">
           <Icon as={MdSearch} />
@@ -36,19 +32,7 @@ export const Filters = (props: IProps) => {
           onChange={(e) => props.setGlobalFilter?.(e.target.value)}
         />
       </InputGroup>
-      {props.isMeFilterActive !== undefined && (
-        <FormControl display={'flex'} alignItems={'center'}>
-          <FormLabel size={'sm'} htmlFor="toggleMeFilter" my={0}>
-            Show only my bookings:
-          </FormLabel>
-          <Switch
-            size={'sm'}
-            id="toggleMeFilter"
-            onChange={props.toggleMeFilter}
-            isChecked={props.isMeFilterActive}
-          />
-        </FormControl>
-      )}
+      {props.customFilters}
     </Flex>
   );
 };
