@@ -8,7 +8,7 @@ import { Input } from '@chakra-ui/input';
 import { Button } from '@chakra-ui/button';
 import { Stack } from '@chakra-ui/layout';
 import { Checkbox } from '@chakra-ui/checkbox';
-import { Link as ChakraLink } from '@chakra-ui/react';
+import { Link as ChakraLink, Flex, Text } from '@chakra-ui/react';
 import { FullPageCentered } from '../FullPageCentered';
 
 const LOGIN_URL = '/api/auth/signin';
@@ -123,7 +123,18 @@ function Login() {
               value={email}
               required
             />
-            <label htmlFor="password">Password:</label>
+            <Flex justifyContent="space-between" alignItems={'baseline'}>
+              <label htmlFor="password">Password:</label>
+              <ChakraLink
+                as={Link}
+                fontStyle={'italic'}
+                to="/forgot-password"
+                color="blue.100"
+                fontSize={'0.8rem'}
+              >
+                Forgot Password?
+              </ChakraLink>
+            </Flex>
             <Input
               type="password"
               id="password"
@@ -140,7 +151,7 @@ function Login() {
             </Checkbox>
           </Stack>
         </form>
-        <p>
+        <Text>
           Need an account?
           <br />
           <span className="line">
@@ -148,7 +159,7 @@ function Login() {
               Sign Up
             </ChakraLink>
           </span>
-        </p>
+        </Text>
       </Stack>
     </FullPageCentered>
   );

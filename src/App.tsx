@@ -19,6 +19,9 @@ import { AllowOnlyUnconfirmed } from './components/AllowOnlyUnconfirmed';
 import { VerificationPage } from './components/VerificationPage';
 import { MembersOnlyWarningPage } from './components/MembersOnlyWarningPage';
 import { PageContent } from './components/PageContent';
+import { FullPageCenteredWithRedirect } from './components/FullPageCenteredWithRedirect';
+import { ForgotPassword } from './components/ForgotPassword';
+import { UpdatePasswordForm } from './components/UpdatePasswordForm';
 
 function App() {
   return (
@@ -30,6 +33,24 @@ function App() {
           <Route element={<Layout />}>
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Register />} />
+            <Route path="reset-password">
+              <Route
+                path=":token"
+                element={
+                  <FullPageCenteredWithRedirect>
+                    <UpdatePasswordForm />
+                  </FullPageCenteredWithRedirect>
+                }
+              />
+            </Route>
+            <Route
+              path="forgot-password"
+              element={
+                <FullPageCenteredWithRedirect>
+                  <ForgotPassword />
+                </FullPageCenteredWithRedirect>
+              }
+            />
             <Route path="unauthorized" element={<Unauthorized />} />
           </Route>
 
