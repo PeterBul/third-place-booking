@@ -8,7 +8,9 @@
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "test": "vitest"
+    "test": "vitest",
+    "docker:build": "docker build -f .Dockerfile -t petercbu/3p-booking-client --no-cache .",
+    "docker:push": "docker push petercbu/3p-booking-client"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.1.1",
